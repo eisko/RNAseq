@@ -1,0 +1,54 @@
+#This is swarm file for fastqc
+#to run file:
+#swarm -f ../myswarms/fastqc.swarm --time 15:00 -p 2 -b 6 --module fastqc
+#to generate:
+#for i in {1..24}; do echo fastqc /data/iskoec/Vanc_data/EI_${i}_1.fq.gz; done
+#for i in {1..24}; do echo fastqc /data/iskoec/Vanc_data/EI_${i}_2.fq.gz; done
+fastqc /data/iskoec/Vanc_data/EI_1_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_2_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_3_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_4_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_5_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_6_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_7_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_8_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_9_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_10_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_11_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_12_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_13_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_14_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_15_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_16_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_17_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_18_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_19_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_20_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_21_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_22_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_23_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_24_1.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_1_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_2_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_3_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_4_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_5_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_6_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_7_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_8_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_9_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_10_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_11_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_12_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_13_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_14_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_15_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_16_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_17_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_18_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_19_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_20_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_21_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_22_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_23_2.fq.gz
+fastqc /data/iskoec/Vanc_data/EI_24_2.fq.gz

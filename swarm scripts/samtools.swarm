@@ -1,0 +1,13 @@
+#samtool sort
+#to run:
+#swarm -f ../myswarms/samtools.swarm -t 4 -g 5 --time 15:00 -b 4 --job-name=samtools_swarm --merge-output --module samtools --dependency=afterok:#jobid#
+#for i in $(seq -f %02g 1 9); do echo samtools sort -@ \$SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_${i}_sorted.bam /scratch/iskoec/EI_${i}.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_01_sorted.bam /scratch/iskoec/EI_01.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_02_sorted.bam /scratch/iskoec/EI_02.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_03_sorted.bam /scratch/iskoec/EI_03.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_04_sorted.bam /scratch/iskoec/EI_04.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_05_sorted.bam /scratch/iskoec/EI_05.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_06_sorted.bam /scratch/iskoec/EI_06.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_07_sorted.bam /scratch/iskoec/EI_07.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_08_sorted.bam /scratch/iskoec/EI_08.sam
+samtools sort -@ $SLURM_CPUS_PER_TASK -o /data/iskoec/Vanc_RnaSeq/sorted/EI_09_sorted.bam /scratch/iskoec/EI_09.sam

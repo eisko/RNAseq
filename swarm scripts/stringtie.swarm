@@ -1,0 +1,12 @@
+#stringtie swarm
+#to run: 
+#swarm -f ../myswarms/stringtie.swarm --time 15:00 -b 4 --job-name=stringtie_swarm --module stringtie --merge-output --dependency=afterok:
+#for i in $(seq -f %02g 1 9); do echo cd /data/\$USER/Vanc_RnaSeq/stringtie/EI_${i}\; stringtie -p \$SLURM_CPUS_PER_TASK -G /data/\$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_${i}_transcripts.gtf -A EI_${i}_gene_abundances.tsv /data/\$USER/Vanc_RnaSeq/sorted/EI_${i}_sorted.bam; done
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_01; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_01_transcripts.gtf -A EI_01_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_01_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_02; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_02_transcripts.gtf -A EI_02_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_02_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_03; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_03_transcripts.gtf -A EI_03_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_03_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_04; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_04_transcripts.gtf -A EI_04_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_04_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_05; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_05_transcripts.gtf -A EI_05_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_05_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_06; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_06_transcripts.gtf -A EI_06_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_06_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_07; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_07_transcripts.gtf -A EI_07_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_07_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_08; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_08_transcripts.gtf -A EI_08_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_08_sorted.bam

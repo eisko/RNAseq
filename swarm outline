@@ -1,0 +1,78 @@
+
+make sure to set-up file structure:
+/data/$USER
+-Exp_data
+    |-file1_1.fq.gz
+    |-file1_2.fq.gz
+    |-file2_1.fq.gz
+    |
+    |
+-ref
+    |-grcm38 #folder w/ hisat indexes
+        |-genome.1.ht2
+        |-genome
+-RNA-HOME
+    |-pipeline_info #(may not need with slurm?)
+        |-pipeline1_info.txt
+    |-fastqc
+        |-file1_1.zip
+        |-file1_1.html
+        |
+        |
+    |-hisat2
+        |-file1_alignStats.txt
+        |-file2_alignStats.txt
+    |-sorted #output of samtools
+        |-file1.bam
+        |-file1.bam.bai
+        |-file2.bam
+        |-file2.bam.bai
+    |-stringtie
+        |-file1 #folder containing file output of stringtie, .ctab files for ballgown input
+            |-file1_gene_abundances.tsv
+            |-file1_transcripts.gtf
+            |-e_data.ctab
+            |-e2t.ctab
+            |-i_data.ctab
+            |-i2t.ctab
+            |-t_data.ctab
+        |-file2
+
+
+SWARM
+#1 - 13.86 minutes
+fastqc filename
+
+SINTERACTIVE
+mv *qc* ../Vanc_RnaSeq/FastQC/
+
+SWARM
+#2 - 24 mins
+hisat2 --rna-strandness RF --dta -p $SLURM_CPUS_PER_TASK  -x $hisat_index \
+-1 $file1 -2 $file2 \
+-S /scratch/$USER/${filename}.sam \
+--summary-file hisat2/${filename}_alignStats.txt
+
+SWARM
+#3 - 11 mins
+samtools sort -@ $SLURM_CPUS_PER_TASK -o ${filename}.sorted.bam /scratch/$USER/${filename}.sam 
+
+
+SINTERACTIVE
+rm /scratch/$USER/filename.sam
+
+SINTERACTIVE
+mkdir -p ${RnaSeq_home}/stringtie/${filename}
+
+SWARM
+#4 - 5 mins
+stringtie -p $SLURM_CPUS_PER_TASK -G $gff -e -B -o ${filename}_transcripts.gtf -A ${filename}_gene_abundances.tsv ${RnaSeq_home}/sorted/${filename}_sorted.bam
+
+SWARM
+#5
+samtools index ${filename}.sorted.bam
+
+SWARM
+#6
+RSEQC 
+

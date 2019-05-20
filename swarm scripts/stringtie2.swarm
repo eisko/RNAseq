@@ -1,0 +1,10 @@
+#stringtie2 swarm - previous swarm exceeded time limit, needed to rerun following samples
+#swarm -f ../myswarms/stringtie.swarm -p 2 --time 10:00 --job-name=stringtie2_swarm --module stringtie --merge-output
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_8; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_8_transcripts.gtf -A EI_8_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_8_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_9; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_9_transcripts.gtf -A EI_9_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_9_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_14; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_14_transcripts.gtf -A EI_14_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_14_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_15; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_15_transcripts.gtf -A EI_15_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_15_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_16; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_16_transcripts.gtf -A EI_16_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_16_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_17; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_17_transcripts.gtf -A EI_17_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_17_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_23; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_23_transcripts.gtf -A EI_23_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_23_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/stringtie/EI_24; stringtie -p $SLURM_CPUS_PER_TASK -G /data/$USER/ref/Mus_musculus.GRCm38.94.gtf -e -B -o EI_24_transcripts.gtf -A EI_24_gene_abundances.tsv /data/$USER/Vanc_RnaSeq/sorted/EI_24_sorted.bam

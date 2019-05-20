@@ -1,0 +1,13 @@
+#samtools index swarm
+#to run:
+#swarm -f ../myswarms/samtools_index.swarm --time=05:00 -b 4 --merge-output --job-name=samtools_index --module samtools --dependency=afterok:
+#for i in $(seq -f %02g 1 9); do echo cd /data/\$USER/Vanc_RnaSeq/sorted\; samtools index -@ \$SLURM_CPUS_PER_TASK EI_${i}_sorted.bam; done
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_01_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_02_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_03_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_04_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_05_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_06_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_07_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_08_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/sorted; samtools index -@ $SLURM_CPUS_PER_TASK EI_09_sorted.bam
