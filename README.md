@@ -8,3 +8,5 @@ See [**Biowulf_RnaPipeline.sh**](Biowulf_RnaPipeline.sh) for example sbatch scri
 See [**swarm scripts**](https://github.com/eisko/RNAseq/tree/master/swarm%20scripts) folder for swarm scripts used to run samples on biowulf.
 * Swarm scripts were run on sampels named EI01 through EI24 
 
+See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data (ballgown_script.R) and make figures (need to include more).
+
