@@ -1,7 +1,7 @@
 # RNAseq
 Scripts for RNAseq pipeline
 
-See [**swarm outline**](https://github.com/eisko/RNAseq/blob/master/swarm%20outline) for summary of commands used in swarms on biowulf.
+See [**swarm outline**](https://github.com/eisko/RNAseq/blob/master/swarm%20outline) for the pipeline outline and a summary of commands used in swarm scripts on biowulf.
 
 See [**Biowulf_RnaPipeline.sh**](Biowulf_RnaPipeline.sh) for example sbatch script for processing a single sample and recording runtimes.
 
