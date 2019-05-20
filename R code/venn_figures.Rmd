@@ -1,0 +1,114 @@
+---
+title: "Venn plot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library("gdata")
+library("VennDiagram")
+library("gplots")
+library("ggplot2")
+library("venneuler") # may need to manually install at right
+
+
+# biowulf
+# setwd("/data/iskoec/Vanc_RnaSeq/ballgown/venns")
+
+
+
+```
+
+
+Upload tables for venn diagrams
+
+```{r}
+# SHAM
+sham_up <- read.table("../sham/sham_up_gene_results.tsv", sep = "\t", header=TRUE)
+sham_down <- read.table("../sham/sham_down_gene_results.tsv", sep = "\t", header=TRUE)
+
+# VANC
+vanc_up <- read.table("../vanc/vanc_up_gene_results.tsv", sep = "\t", header=TRUE)
+vanc_down <- read.table("../vanc/vanc_down_gene_results.tsv", sep = "\t", header=TRUE)
+
+# AFFECTED
+aff_up <- read.table("../aff/aff_up_gene_results.tsv", sep = "\t", header=TRUE)
+aff_down <- read.table("../aff/aff_down_gene_results.tsv", sep = "\t", header=TRUE)
+
+# UNAFFECTED
+unaff_up <- read.table("../unaff/unaff_up_gene_results.tsv", sep = "\t", header=TRUE)
+unaff_down <- read.table("../unaff/unaff_down_gene_results.tsv", sep = "\t", header=TRUE)
+
+```
+
+
+
+Sham up vs. aff down
+
+draw.pairwise.venn(area1, area2, overlap)
+area1 = size of set 1
+area2 = size of set 2
+overlap = intersection
+```{r}
+# sham_up vs. aff_down
+su_genes <- sham_up$gene_name
+ad_genes <- aff_down$gene_name
+
+overlap_suad <- intersect(su_genes, ad_genes)
+
+    
+
+```
+
+
+```{r venn2, echo = FALSE, fig.height=4, fig.width=4, fig.align='center'}
+geneLists1 <- list(sham_up$gene_name, aff_down$gene_name)
+names(geneLists1) = c("Sham_up", "Aff_down")
+VENN.LIST1 <- geneLists1
+
+
+grid.newpage()
+# note length(sham_up) < length(aff_down)
+# category names = c(bigger group, smaller group)
+vennplot1 <- draw.pairwise.venn(length(sham_up$gene_name), length(aff_down$gene_name), length(intersect(sham_up$gene_name, aff_down$gene_name)), 
+                                fill=c("darkmagenta", "darkblue"),
+                                alpha=c(0.5,0.5), 
+                                cex = 1.5,
+                                lwd = 0.95,
+                                fontfamily = "sans",
+                                cat.fontfamily = "sans",
+                                cat.cex = 1.5)
+```
+
+```{r}
+# export graph
+# tiff()
+```
+
+
+
+```{r venn2, echo = FALSE, fig.height=4, fig.width=4, fig.align='center'}
+geneLists2 <- list(sham_down$gene_name, aff_up$gene_name)
+names(geneLists2) = c("Sham_down", "Aff_up")
+VENN.LIST2 <- geneLists2
+
+# note: length(sham_down) > length(aff_up)
+grid.newpage()
+vennplot2 <- draw.pairwise.venn(length(sham_down$gene_name), length(aff_up$gene_name), length(intersect(sham_down$gene_name, aff_up$gene_name)), 
+                                fill=c("darkmagenta", "darkblue"),
+                                alpha=c(0.5,0.5), 
+                                cex = 1.5,
+                                lwd = 0.95,
+                                fontfamily = "sans",
+                                cat.fontfamily = "sans",
+                                cat.cex = 1.5)
+```
+
+
+
+
+```{r}
+# output venn
+```
+

@@ -1,0 +1,140 @@
+---
+title: "Pretty Figures"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Make sure to necessary packages are installed
+library(ballgown)
+library(genefilter)
+library(dplyr)
+library(devtools)
+library(gplots)
+library(ggplot2)
+library(ggbiplot)
+library(ggfortify)
+library(calibrate)
+library(cluster)
+
+# for PCA plots:
+# library(ggplot2) # redundant
+library(grid)
+library(gridExtra)
+
+load("~/code/RnaSeq/ballgown/Vanc_bg.rda")
+
+pData <- read.csv("~/code/RnaSeq/ballgown/Vanc_pdata.csv")
+
+```
+
+```{r}
+BG_sham <- subset(bg, "treatment=='sham'", genomesubset=FALSE)
+pData_sham <- filter(pData, treatment=="sham")
+BG_aff <- subset(bg, "condition=='aff'", genomesubset=FALSE)
+pData_aff <- filter(pData, condition=="aff")
+```
+
+```{r}
+transcript_fpkm_sh = texpr(BG_sham, 'FPKM')
+transcript_fpkm_log2_sh = log2(transcript_fpkm_sh+1) 
+
+pca_sh = prcomp(t(transcript_fpkm_log2_sh))
+
+# autoplot(pca,data=pData(BG_sham),colour="condition") + ggtitle("Unaffecteds vs. Affecteds PCA")
+
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out_sh <- as.data.frame(pca_sh$x)
+names_sh <- c(paste("affected", 1:6, sep="_"), paste("unaffected", 1:6, sep = "_"))
+row.names(df_out_sh) <- names_sh
+df_out_sh$Condition <- pData_sham$condition
+df_out_sh
+
+
+```
+
+```{r}
+# ORIGINAL PCA WITH AUTOPLOT (SUBSET OF GGPLOT)
+p <- autoplot(pca_sh,data=pData(BG_sham),colour="condition") + ggtitle("Unaffecteds vs. Affecteds PCA")
+
+p<-p+theme
+
+p
+```
+
+
+
+```{r}
+# PCA 1 aesthetic
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition ))
+p<-p+geom_point()
+p
+
+```
+
+
+
+
+```{r}
+theme<-theme(panel.background = element_blank(),panel.border=element_rect(fill=NA),panel.grid.major = element_blank(),panel.grid.minor = element_blank(),strip.background=element_blank(),axis.text.x=element_text(colour="black"),axis.text.y=element_text(colour="black"),axis.ticks=element_line(colour="black"),plot.margin=unit(c(1,1,1,1),"line"))
+
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition ))
+p<-p+geom_point()+theme
+p
+
+
+```
+
+
+```{r}
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition, label=row.names(df_out_sh) ))
+p<-p+geom_point()+ geom_text(size=3)+theme
+p
+
+```
+
+```{r}
+percentage <- round(pca_sh$sdev / sum(pca_sh$sdev) * 100, 2)
+percentage <- paste( colnames(df_out_sh), "(", paste( as.character(percentage), "%", ")", sep="") )
+
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition ))
+p<-p+geom_point()+theme + xlab(percentage[1]) + ylab(percentage[2])
+p
+```
+
+
+
+
+
+
+```{r, PCA sham}
+transcript_fpkm_af = texpr(BG_aff, 'FPKM')
+transcript_fpkm_log2_af = log2(transcript_fpkm_af+1) 
+
+```
+
+
+
+```{r}
+head(iris)
+df <- iris
+df <- as.data.frame(iris)
+
+row.names(df) <- paste(df$Species, row.names(df), sep="_") 
+df$Species <- NULL
+
+head(df)
+
+```
+
+
+```{r}
+df_pca <- prcomp(df)
+df_out <- as.data.frame(df_pca$x)
+df_out$group <- sapply( strsplit(as.character(row.names(df)), "_"), "[[", 1 )
+head(df_out)
+```
+
