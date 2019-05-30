@@ -6,7 +6,9 @@ See [**swarm outline**](https://github.com/eisko/RNAseq/blob/master/swarm%20outl
 See [**Biowulf_RnaPipeline.sh**](Biowulf_RnaPipeline.sh) for example sbatch script for processing a single sample and recording runtimes.
 
 See [**swarm scripts**](https://github.com/eisko/RNAseq/tree/master/swarm%20scripts) folder for swarm scripts used to run samples on biowulf.
-* Swarm scripts were run on sampels named EI01 through EI24 
+* Swarm scripts were run on sampels named EI01 through EI24
+
+See [**swarm_files.py**]
 
 See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data (ballgown_script.R) and make figures (need to include more).
 
