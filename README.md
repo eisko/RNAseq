@@ -23,4 +23,4 @@ See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scr
 * **app.R** - Interactive shiny app to highlight genes of interest
 * pretty figures ... - files used to generate figures for presentations and posters
 
-see [**folders.sh**](https://github.com/eisko/RNAseq/blob/master/folders.sh) for bash script to generate proper folder structure before running swarm scripts
+See [**folders.sh**](https://github.com/eisko/RNAseq/blob/master/folders.sh) for bash script to generate proper folder structure before running swarm scripts
