@@ -8,7 +8,14 @@ See [**Biowulf_RnaPipeline.sh**](Biowulf_RnaPipeline.sh) for example sbatch scri
 See [**swarm scripts**](https://github.com/eisko/RNAseq/tree/master/swarm%20scripts) folder for swarm scripts used to run samples on biowulf.
 * Swarm scripts were run on sampels named EI01 through EI24
 
-See [**swarm_files.py**]
+See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files.py) for python script to generate swarm files.
+* Script requires you to specify a samples.csv file that conatines 3 columns (Used command line for loop to generate fastq paths):
+  ** **SampleIDs** - to label subsequent samples
+  ** **Fastq_Path1** - full path to read1 fastq file
+  ** **Fastq_Path2** - full path to read2 fastq file
 
 See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data (ballgown_script.R) and make figures (need to include more).
+* **ballgown_script.R** - script used to generate DEGs for comparisons of different conditions
+* **app.R** - Interactive shiny app to highlight genes of interest
+* pretty figures ... - files used to generate figures for presentations and posters
 
