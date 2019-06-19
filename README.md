@@ -18,7 +18,7 @@ See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files
    * **ANNOTATION** - full path to .gtf file for stringtie to use to assemble/label genes/transcripts. 
    * **PROJECT** - full path to project folder that contains data and proper file structure (see [**swarm outline**](https://github.com/eisko/RNAseq/blob/master/swarm%20outline) for file structure). 
 
-See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data (ballgown_script.R) and make figures (need to include more).
+See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data and make figures.
 * **ballgown_script.R** - script used to generate DEGs for comparisons of different conditions
 * **app.R** - Interactive shiny app to highlight genes of interest
 * [**pretty figures folder**](https://github.com/eisko/RNAseq/tree/master/R%20code/Pretty%20Figures) - files used to generate figures for presentations and posters
