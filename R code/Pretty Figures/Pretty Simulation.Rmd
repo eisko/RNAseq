@@ -1,0 +1,153 @@
+---
+title: "Pretty Simulation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library("GeneOverlap")
+library("gdata")
+library("VennDiagram")
+library("gplots")
+library("ggplot2")
+
+library("grid")
+library("gridExtra")
+library("lattice")
+
+
+
+```
+
+
+```{r, inclue = FALSE}
+theme<-theme(panel.background = element_blank(),
+             panel.border=element_rect(fill=NA),
+             panel.grid.major = element_line(colour="grey90", size=0.5),
+             panel.grid.minor = element_blank(),
+             strip.background=element_blank(),
+             axis.title = element_text(colour="black", face="bold"),
+             axis.text=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),
+             plot.margin=unit(c(1,1,1,1),"line"),
+             plot.title = element_text(hjust = 0.5))
+```
+
+# Simulation
+
+The following simulation calculates the size of overlap between two randomly generate lists from a base of **20,210**, the number of protein encoding genes in the mouse genome (see below). 
+
+A list of **5000** 'genes' (in this case random integers) will randomly be picked from an integer list of 1 to 20,210.
+
+**100000** trials will be run.
+
+```{r}
+# set.seed?
+
+gs_mouse = 20210
+samplesize = 5000
+trials = 100000
+
+IntersectionCounts <- sapply(1:trials,
+                 function(IntersectCount)
+                   c(IntersectCount,length(intersect(sample(gs_mouse, samplesize), sample(gs_mouse, samplesize)))))
+
+# format IntersectionCounts
+IntersectionCounts <- as.data.frame(t(IntersectionCounts))
+colnames(IntersectionCounts) <- c("Trial","Intersections")
+head(IntersectionCounts)
+```
+
+```{r histogram simulation}
+histo <- ggplot(IntersectionCounts, aes(x=Intersections))+
+  geom_histogram(alpha = .5, color = "black", fill = "#7B409A")+
+  xlab("Number of Overlapping Genes")+
+  ylab("Count")+
+  geom_vline(aes(xintercept=mean(IntersectionCounts$Intersections)),
+            color="#7B409A", linetype="dashed", size=1, show.legend=TRUE)+
+  theme(panel.background = element_blank(),
+             panel.border=element_rect(fill=NA),
+             panel.grid.major = element_line(colour="grey90", size=0.5),
+             panel.grid.minor = element_blank(),
+             strip.background=element_blank(),
+             axis.title = element_text(colour="black", face="bold"),
+             axis.text=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),
+             plot.margin=unit(c(1,1,1,1),"line"),
+             plot.title = element_text(hjust = 0.5))
+histo
+```
+```{r}
+tiff(filename = "Histo_sim.tiff", width = 6, height = 4, units = "in", res = 300)
+histo
+dev.off()
+```
+
+
+
+
+
+```{r}
+histod <- ggplot(IntersectionCounts, aes(x=Intersections))+
+  geom_histogram(aes(y = ..density..),alpha = .5, color = "black", fill = "#7B409A")+
+  geom_density(fill=NA, color = "black") +
+  theme(panel.background = element_blank(),
+             panel.border=element_rect(fill=NA),
+             panel.grid.major = element_line(colour="grey90", size=0.5),
+             panel.grid.minor = element_blank(),
+             strip.background=element_blank(),
+             axis.title = element_text(colour="black", face="bold"),
+             axis.text=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),
+             plot.margin=unit(c(1,1,1,1),"line"),
+             plot.title = element_text(hjust = 0.5))
+histod
+```
+
+
+
+
+
+
+The mean intersection size is **`r mean(IntersectionCounts[,"Intersections"])`**. 
+
+```{r venn_simulation, include=FALSE}
+
+# randomList <- replicate(15, sample(gs_mouse, samplesize))
+
+venns <- lapply(1:10, function(i)
+  grobTree(draw.pairwise.venn(5000, 5000, IntersectionCounts[i, "Intersections"],
+           fill=c("darkmagenta", "darkblue"),
+           alpha=c(0.5,0.5),
+           cex = 0.5,
+           main= paste("Venn", i), main.cex = 2)))
+
+# gs <- lapply(1:9, function(ii) 
+#   grobTree(rectGrob(gp=gpar(fill=ii, alpha=0.5)), textGrob(ii)))
+# grid.arrange(grobs=gs, ncol=4, 
+#                top="top label", bottom="bottom\nlabel", 
+#                left="left label", right="right label")
+# grid.rect(gp=gpar(fill=NA))
+# see: https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html
+
+```
+
+
+
+
+
+
+
+
+
+```{r, echo=FALSE, fig.height=2.1, fig.width=5, fig.align='center'}
+
+title=textGrob("Example Random Overlaps", gp=gpar(fontface="bold", fontfamily="Times"))
+
+# tiff(filename = "Venn_simulation.tiff", width = 10, height = 4.3, units = "in", res = 300)
+
+grid.arrange(grobs=venns, ncol=5,
+             top=title)
+# dev.off()
+```

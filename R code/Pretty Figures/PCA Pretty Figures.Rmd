@@ -1,0 +1,149 @@
+---
+title: "Pretty Figures"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Make sure to necessary packages are installed
+library(ballgown)
+library(genefilter)
+library(dplyr)
+library(devtools)
+library(gplots)
+library(ggplot2)
+# library(ggbiplot) <- interferes with ballgown functionality?
+library(ggfortify)
+library(calibrate)
+library(cluster)
+
+# for PCA plots:
+# library(ggplot2) # redundant
+library(grid)
+library(gridExtra)
+
+load("~/code/ballgown2/Vanc_bg.rda")
+
+pData <- read.csv("~/code/ballgown2/Vanc_pdata2.csv")
+
+```
+
+```{r}
+BG_sham <- subset(bg, "treatment=='sham'", genomesubset=FALSE)
+pData_sham <- filter(pData, Treatment=="No Treatment")
+BG_aff <- subset(bg, "condition=='aff'", genomesubset=FALSE)
+pData_aff <- filter(pData, Condition=="Affected")
+```
+
+```{r}
+transcript_fpkm_sh = texpr(BG_sham, 'FPKM')
+transcript_fpkm_log2_sh = log2(transcript_fpkm_sh+1)
+
+pca_sh = prcomp(t(transcript_fpkm_log2_sh))
+
+# autoplot(pca,data=pData(BG_sham),colour="condition") + ggtitle("Unaffecteds vs. Affecteds PCA")
+
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out_sh <- as.data.frame(pca_sh$x)
+names_sh <- c(paste("affected", 1:6, sep="_"), paste("unaffected", 1:6, sep = "_"))
+### change labels to male or female
+row.names(df_out_sh) <- names_sh
+df_out_sh$Condition <- pData_sham$Condition
+df_out_sh$Sex <- pData_sham$Sex
+df_out_sh
+
+
+```
+
+```{r}
+# ORIGINAL PCA WITH AUTOPLOT (SUBSET OF GGPLOT)
+p <- autoplot(pca_sh,data=pData(BG_sham),colour="condition") + ggtitle("Unaffecteds and Affecteds PCA")
+
+p<-p+theme
+
+p
+```
+
+
+
+```{r}
+# PCA 1 aesthetic
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition ))
+p<-p+geom_point(size=6)
+p
+
+```
+
+
+
+
+```{r}
+theme<-theme(panel.background = element_blank(),
+             panel.border=element_rect(fill=NA),
+             panel.grid.major = element_line(colour="grey90", size=0.5),
+             panel.grid.minor = element_blank(),
+             strip.background=element_blank(),
+             axis.title = element_text(colour="black", face="bold"),
+             axis.text=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),
+             plot.margin=unit(c(1,1,1,1),"line"),
+             plot.title = element_text(hjust = 0.5))
+
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition ))
+p<-p+geom_point(size=5)+theme
+p
+
+
+
+```
+
+
+```{r}
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition,label=row.names(df_out_sh)))
+p<-p+geom_point(size=5)+ geom_text(size=3.5, nudge_y = -5)+theme
+p
+
+
+```
+
+```{r}
+percentage <- round(pca_sh$sdev^2 / sum(pca_sh$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage <- paste( colnames(df_out_sh), "(", paste( as.character(percentage), "%", ")", sep="") )
+
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition,label=Sex))
+p<-p+geom_point()+theme + xlab(percentage[1]) + ylab(percentage[2])
+p<-p+geom_point(size=5)+ geom_text(size=4, nudge_y = -6)+theme
+p <- p+scale_color_manual(values=c("#4370C3", "#70AD46"), breaks=c("Unaffected", "Affected")) # values = c(affected no treatment, unaffected no treatment)
+p
+
+```
+
+```{r}
+q<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition,shape=Sex))
+q<-q+geom_point()+theme + xlab(percentage[1]) + ylab(percentage[2])
+q<-q+geom_point(size=5)+theme
+q+ggtitle("PCA of Disease Condition")
+q
+```
+
+
+
+
+
+
+```{r, PCA sham}
+transcript_fpkm_af = texpr(BG_aff, 'FPKM')
+transcript_fpkm_log2_af = log2(transcript_fpkm_af+1)
+
+```
+
+
+
+```{r}
+
+```
+

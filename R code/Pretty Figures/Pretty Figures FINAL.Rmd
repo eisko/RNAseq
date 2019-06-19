@@ -1,0 +1,295 @@
+---
+title: "PCA Plots"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Make sure to necessary packages are installed
+library(ballgown)
+library(genefilter)
+library(dplyr)
+library(dplyr)
+library(devtools)
+library(gplots)
+library(ggplot2)
+# library(ggbiplot) <- interferes with ballgown functionality?
+library(ggfortify)
+library(calibrate)
+library(cluster)
+
+# for PCA plots:
+# library(ggplot2) # redundant
+library(grid)
+library(gridExtra)
+
+load("~/code/ballgown2/Vanc_bg.rda")
+
+pData <- read.csv("~/code/ballgown2/Vanc_pdata2.csv")
+
+title <- "PCA of Disease Condition"
+
+
+theme<-theme(panel.background = element_blank(),
+             panel.border=element_rect(fill=NA),
+             panel.grid.major = element_line(colour="grey90", size=0.5),
+             panel.grid.minor = element_blank(),
+             strip.background=element_blank(),
+             axis.title = element_text(colour="black", face="bold"),
+             axis.text=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),
+             plot.margin=unit(c(1,1,1,1),"line"),
+             plot.title = element_text(hjust = 0.5))
+```
+
+
+```{r colors, include = False}
+
+green <- "#70AD46" # unaffecteds, no treatment
+yellow <- "#FBBF07" # unaffecteds, vanc
+blue <- "#4370C3" # affecteds, no treatment
+orange <- "#ED7E2F" # affecteds, vanc
+
+
+```
+
+
+
+
+
+
+Setting up objects
+
+```{r}
+# SHAM
+BG <- subset(bg, "treatment=='sham'", genomesubset=FALSE)
+pData_sham <- filter(pData, Treatment=="No Treatment")
+
+# AFF
+BG_aff <- subset(bg, "condition=='affected'", genomesubset=FALSE)
+pData_aff <- filter(pData, Condition=="Affected")
+
+# for computing unaff_vanc vs. aff_vanc
+BG_vanc <- subset(bg, "treatment=='vancomycin'", genomesubset=FALSE)
+pData_vanc <- filter(pData, Treatment == "Vancomycin")
+
+
+# UNAFF
+BG_unaff <- subset(bg, "condition=='unaffected'", genomesubset=FALSE)
+pData_unaff <- filter(pData, Condition=="Unaffected")
+
+
+# # for comparing unaff, no treat with aff, vanc
+# BG_same <- subset(bg, "group=='Un_Sham' | group=='Af_Vanc'", genomesubset=FALSE)
+# pData_same <- filter(pData, Group=="Unaffected - No Treatment" | Group =="Affected - Vancomycin")
+
+
+
+```
+
+```{r}
+transcript_fpkm_sh = texpr(BG_sham, 'FPKM')
+transcript_fpkm_log2_sh = log2(transcript_fpkm_sh+1)
+
+pca_sh = prcomp(t(transcript_fpkm_log2_sh))
+
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out_sh <- as.data.frame(pca_sh$x)
+### change labels to male or female
+df_out_sh$Condition <- pData_sham$Condition
+df_out_sh$Sex <- pData_sham$Sex
+df_out_sh
+
+
+
+# calculate percentages
+percentage_sh <- round(pca_sh$sdev^2 / sum(pca_sh$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage_sh <- paste( colnames(df_out_sh), "(", paste( as.character(percentage_sh), "%", ")", sep="") )
+
+```
+
+
+```{r}
+p<-ggplot(df_out_sh,aes(x=PC1,y=PC2,color=Condition,shape=Sex))
+p<-p+geom_point()+theme + xlab(percentage_sh[1]) + ylab(percentage_sh[2])
+p<-p+geom_point(size=5)+theme
+p<-p+ggtitle(title)
+p<-p+scale_color_manual(values=c("#4370C3", "#70AD46"))
+p
+```
+
+```{r}
+# output tiff pic
+tiff(filename = "PCA_sham.tiff", width = 6, height = 4, units = "in", res = 300)
+p
+dev.off()
+
+
+```
+
+
+```{r}
+transcript_fpkm_af = texpr(BG_aff, 'FPKM')
+transcript_fpkm_log2_af = log2(transcript_fpkm_af+1)
+
+pca_af = prcomp(t(transcript_fpkm_log2_af))
+
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out_af <- as.data.frame(pca_af$x)
+### change labels to male or female
+df_out_af$Treatment <- pData_aff$Treatment
+df_out_af$Sex <- pData_aff$Sex
+df_out_af
+
+# calculate percentages
+percentage_af <- round(pca_af$sdev^2 / sum(pca_af$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage_af <- paste( colnames(df_out_af), "(", paste( as.character(percentage_af), "%", ")", sep="") )
+
+```
+
+
+
+```{r}
+q<-ggplot(df_out_af,aes(x=PC1,y=PC2,color=Treatment,shape=Sex))
+q<-q+geom_point()+theme + xlab(percentage_af[1]) + ylab(percentage_af[2])
+q<-q+geom_point(size=5)+theme
+q<-q+ggtitle("PCA of Treatment")
+q<-q+scale_color_manual(values=c("#4370C3", "#EC7D2F"))
+q
+```
+```{r}
+# output tiff pic
+tiff(filename = "PCA_aff.tiff", width = 6, height = 4, units = "in", res = 300)
+q
+dev.off()
+
+```
+
+
+```{r}
+transcript_fpkm_sm = texpr(BG_same, 'FPKM')
+transcript_fpkm_log2_sm = log2(transcript_fpkm_sm+1)
+
+pca_sm = prcomp(t(transcript_fpkm_log2_sm))
+
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out_sm <- as.data.frame(pca_sm$x)
+### change labels to male or female
+df_out_sm$Group <- pData_same$Group
+df_out_sm$Sex <- pData_same$Sex
+df_out_sm
+
+# calculate percentages
+percentage_sm <- round(pca_sm$sdev^2 / sum(pca_sm$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage_sm <- paste( colnames(df_out_sm), "(", paste( as.character(percentage_sm), "%", ")", sep="") )
+
+```
+
+
+```{r}
+r<-ggplot(df_out_sm,aes(x=PC1,y=PC2,color=Group,shape=Sex))+
+  xlab(percentage_sm[1])+
+  ylab(percentage_sm[2])+
+  geom_point(size=5)+
+  theme+
+  scale_color_manual(values=c(orange, green))
+r
+```
+
+
+```{r}
+# output tiff pic
+tiff(filename = "PCA_same.tiff", width = 6, height = 4, units = "in", res = 300)
+r
+dev.off()
+
+```
+
+```{r}
+transcript_fpkm_vanc = texpr(BG_vanc, 'FPKM')
+transcript_fpkm_log2_vanc = log2(transcript_fpkm_vanc+1)
+
+pca_vanc = prcomp(t(transcript_fpkm_log2_vanc))
+
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out_vanc <- as.data.frame(pca_vanc$x)
+### change labels to male or female
+df_out_vanc$Group <- pData_vanc$Group
+df_out_vanc$Sex <- pData_vanc$Sex
+df_out_vanc
+
+# calculate percentages
+percentage_vanc <- round(pca_vanc$sdev^2 / sum(pca_vanc$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage_vanc <- paste( colnames(df_out_vanc), "(", paste( as.character(percentage_vanc), "%", ")", sep="") )
+
+```
+
+
+```{r}
+t<-ggplot(df_out_vanc,aes(x=PC1,y=PC2,color=Group,shape=Sex))+
+  xlab(percentage_vanc[1])+
+  ylab(percentage_vanc[2])+
+  geom_point(size=5)+
+  theme+
+  scale_color_manual(values=c(orange, yellow))
+t
+```
+
+
+```{r}
+# output tiff pic
+tiff(filename = "PCA_vanc.tiff", width = 6, height = 4, units = "in", res = 300)
+t
+dev.off()
+```
+
+
+```{r}
+transcript_fpkm_unaff = texpr(BG_unaff, 'FPKM')
+transcript_fpkm_log2_unaff = log2(transcript_fpkm_unaff+1)
+
+pca_unaff = prcomp(t(transcript_fpkm_log2_unaff))
+
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out_unaff <- as.data.frame(pca_unaff$x)
+### change labels to male or female
+df_out_unaff$Treatment <- pData_unaff$Treatment
+df_out_unaff$Sex <- pData_unaff$Sex
+df_out_unaff
+
+# calculate percentages
+percentage_unaff <- round(pca_unaff$sdev^2 / sum(pca_unaff$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage_unaff <- paste( colnames(df_out_unaff), "(", paste( as.character(percentage_unaff), "%", ")", sep="") )
+```
+
+```{r}
+s<-ggplot(df_out_unaff,aes(x=PC1,y=PC2,color=Treatment,shape=Sex))+
+  xlab(percentage_unaff[1])+
+  ylab(percentage_unaff[2])+
+  geom_point(size=5)+
+  theme+
+  scale_color_manual(values=c(green, yellow))
+s
+```
+```{r}
+# output tiff pic
+tiff(filename = "PCA_unaff.tiff", width = 6, height = 4, units = "in", res = 300)
+s
+dev.off()
+```
