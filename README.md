@@ -21,6 +21,6 @@ See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files
 See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data (ballgown_script.R) and make figures (need to include more).
 * **ballgown_script.R** - script used to generate DEGs for comparisons of different conditions
 * **app.R** - Interactive shiny app to highlight genes of interest
-* [**pretty figures folder**]() - files used to generate figures for presentations and posters
+* [**pretty figures folder**](https://github.com/eisko/RNAseq/tree/master/R%20code/Pretty%20Figures) - files used to generate figures for presentations and posters
 
 See [**folders.sh**](https://github.com/eisko/RNAseq/blob/master/folders.sh) for bash script to generate proper folder structure before running swarm scripts
