@@ -1,0 +1,131 @@
+---
+title: "qPCR"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(mefa)
+```
+
+
+```{r}
+data <- read.csv("Nnmtall.csv")
+hk_gene <- "Gapdh" # house keeping gene
+gois <- list("Nmnt", "Nampt", "Nnmat1")
+pdata <- read.csv("Vanc_pdata.csv")
+```
+
+```{r}
+# drop Nan/0 values
+clean <- drop_na(data)
+# average sample values
+# group by sample and Primer
+sorted <- clean %>% group_by(Sample, Primer)
+# calculate means
+means <- sorted %>% summarise(mean(Cq))
+# rename column so function doesn't get confused
+means <- means %>% rename("avg_Cq" = "mean(Cq)")
+# rearrange data so rows = samples and cols = genes
+means <- spread(means, Primer, avg_Cq)
+
+
+```
+
+
+
+```{r}
+
+# subtract housekeeping gene (Gapdh) from gene of interest for all samples
+
+means <- means %>% mutate(Nmnt - Gapdh)  %>% rename(NNmnt = `Nmnt - Gapdh`)
+means <- means %>% mutate(Nampt - Gapdh)  %>% rename(NNampt = `Nampt - Gapdh`)
+means <- means %>% mutate(Nnmat1 - Gapdh)  %>% rename(NNnmat1 = `Nnmat1 - Gapdh`)
+
+means
+```
+
+
+```{r}
+# extract needed info
+Nmeans <- select(means, starts_with("NN"), -starts_with("Nnma"))
+Nmeans
+```
+
+
+```{r}
+# add pdata?
+final <- left_join(Nmeans, pdata, by = c("Sample" = "sample_id"))
+final
+
+# library(mefa) needed to repeat dfs
+# get control value dataframe
+ref <- final %>% filter(condition == "unaffected" & treatment == "sham")  %>% ungroup() %>% summarise_at(c("NNmnt", "NNampt", "NNnmat1"), mean)
+names(ref) <- c("NmntCtl", "NamptCtl", "Nnmat1Ctl")
+ref
+refdf <- rep(ref, 24)
+refdf
+
+```
+
+
+
+```{r}
+# calculate delta delta Ct
+deltadelta <- Nmeans[2:ncol(Nmeans)] - refdf
+deltadelta
+```
+
+```{r}
+# 2^-deltadeltaCt
+logexpr <- as_data_frame(lapply(deltadelta, function(x) 2^-x))
+
+logexpr["Sample"] <- Nmeans[1]
+logexpr <- logexpr %>% select(Sample, everything())
+logexpr
+```
+
+
+```{r}
+log2data <- left_join(logexpr, pdata, by = c("Sample" = "sample_id"))
+log2data
+
+```
+
+```{r}
+# extract mean and standard of each group to plot
+log2data <- log2data %>% group_by(group)
+plotdata_means <- log2data %>% summarise_at(c("NNmnt", "NNampt", "NNnmat1"), mean)
+plotdata_sd <- log2data %>% summarise_at(c("NNmnt", "NNampt", "NNnmat1"), sd)
+plotdata_sd
+```
+
+```{r}
+# tidy data for ggplot2
+plotdata_means <- plotdata_means %>% gather(Primer, Mean, -group)
+plotdata_sd <- plotdata_sd %>% gather(Primer, SD, -group)
+
+plotdata <- left_join(plotdata_means, plotdata_sd)
+plotdata
+
+```
+```{r}
+# make ggplot2
+p <- ggplot(log2data, aes(x=group, y = NNmnt)) +
+  geom_bar(stat= "identity")
+p
+```
+```{r}
+# make ggplot2
+p2 <- ggplot(filter(plotdata, Primer == "NNmnt"), aes(x=group, y = Mean)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin=Mean-SD, ymax=Mean+SD), width=.2,
+                 position=position_dodge(.9))  +
+  theme_classic()
+p2
+```
+

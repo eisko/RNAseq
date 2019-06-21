@@ -1,0 +1,64 @@
+---
+title: "FPKM_data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+setwd("~/code/qPCR_FPKM")
+```
+
+
+
+Load data:
+```{r}
+all_gexpr <- read.csv("all_gexpr_unfiltered.tsv", sep = "\t")
+all_gexpr <- tibble::rownames_to_column(all_gexpr, var = "ensembl_id")
+all_gexpr
+```
+
+```{r}
+# label gene names for each ensebl Ids to make sorting easier
+load("~/code/qPCR_FPKM/FullconversionList.Rda") # Loads dataframe called conversionList
+labeledDF <- left_join(all_gexpr, FullConversionList, by = c("ensembl_id" = "ensembl_gene_id"))
+relabeledDF <- labeledDF %>% select(external_gene_name, everything()) %>% slice(4:nrow(labeledDF))
+relabeledDF
+```
+```{r}
+# select genes of itnerest
+gois <- c("Nnmt", "Nampt", "Nmnat1", "Nmnat2", "Nmnat3", "Nrk1", "Nrk2", "Sirt1", "Cd38", "Pparg", "Mat1a", "Mat2a", "Mat2b", "Amd1", "Gnmt", "Gamt", "Pemt", "Mtr", "Mtrr", "Bhmt", "Ahcy", "Cbs", "Aox1", "Aox2", "Cyp2e1")
+
+gois_FPKM <- relabeledDF %>% filter(external_gene_name %in% gois)
+
+# following only works if no repeats in genes
+gois_FPKM_T <- gois_FPKM %>% select(-ensembl_id) %>% 
+  gather(sample_id, valname, -external_gene_name) %>% 
+  spread(external_gene_name, valname)
+
+
+
+# delete "FPKM." from sample_id
+gois_FPKM_T$sample_id <- gsub("FPKM.", "", gois_FPKM_T$sample_id)
+gois_FPKM_T
+```
+##NOTE: missing Nrk1 and Nrk2 for some reason???
+
+
+
+```{r}
+# add pdata to data frame so can sort and graph more easily
+pdata <- read.csv("Vanc_pdata.csv")
+
+labeled_gois_FPKM <- left_join(gois_FPKM_T, pdata, by = "sample_id")
+labeled_gois_FPKM
+```
+
+Now to (finally) make bar graphs for all genes of interest:
+```{r}
+
+```
+
