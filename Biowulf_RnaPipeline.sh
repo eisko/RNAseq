@@ -45,17 +45,17 @@ filename=EI_01
 #note: used GRCm38.p6 from NCBI
 #see https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.26
 #used following command to download fasta file (.fna = Fasta of Nucleic Acids)
-#wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+#wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRC38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
 #note: file is in .fna format (and can be renamed to .fa format?)
 #May need to rename .fna to .fa
 #ref=/data/$USER/ref/GCA_000001635.5_GRCm38.p3_no_alt_analysis_set.fna.gz
 
 
 #Path to hisat2 index (presumably downloaded)
-#wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/grch38.tar.gz
+#wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/grcm38.tar.gz
 #note: hisat intakes genome index by Path/index_basename (leave off .#.ht extension!)
 # use from Biowulf resources
-hisat_index=$HISAT_INDEXES/grch38/genome
+hisat_index=$HISAT_INDEXES/grcm38/genome
 
 #Path to gtf file
 #used the following to download gtf/gff
