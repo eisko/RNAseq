@@ -24,7 +24,7 @@ colors <- c(green, yellow, blue, orange)
 
 Load data:
 ```{r}
-all_gexpr <- read.csv("all_gexpr_unfiltered.tsv", sep = "\t")
+all_gexpr <- read.csv("~/code/qPCR_FPKM/all_gexpr_unfiltered.tsv", sep = "\t")
 all_gexpr <- tibble::rownames_to_column(all_gexpr, var = "ensembl_id")
 all_gexpr
 ```
@@ -63,7 +63,7 @@ gois_FPKM_T
 gois_FPKM_long <- gois_FPKM_T %>% gather("gene", "FPKM", -sample_id)
 
 # add pdata to data frame so can sort and graph more easily
-pdata <- read.csv("Vanc_pdata.csv")
+pdata <- read.csv("~/code/qPCR_FPKM/Vanc_pdata.csv")
 
 labeled_gois_FPKM <- left_join(gois_FPKM_long, pdata, by = "sample_id")
 labeled_gois_FPKM
@@ -72,9 +72,52 @@ labeled_gois_FPKM
 # reorder and rename groups for plots
 labeled_gois_FPKM$group <- ordered(labeled_gois_FPKM$group, levels = c("Un_Sham", "Un_Vanc", "Af_Sh", "Af_Vanc"))
 
+labeled_gois_FPKM
+
 ```
 
 
+Working graph to figure out graph settings - bar graph
+NOTE: plots median and mean_se
+```{r}
+# calculate means and sd
+Un_Sham = "Unaffecteds (+/-)\nNo Treatment\n(n=6)"
+Un_Vanc = "Unaffecteds (+/-)\nVancomycin\n(n=6)"
+Af_Sh = "Affecteds (-/-)\nNo Treatment\n(n=6)"
+Af_Vanc = "Affecteds (-/-)\nVancomycin\n(n=6)"
+my_comparisons <- list( c(Un_Sham, Af_Sh), c(Af_Sh, Af_Vanc), c(Un_Sham, Un_Vanc))
+
+plot <- ggplot(filter(labeled_gois_FPKM, gene == "Nnmt"), aes(x=group, y = FPKM, fill=group)) +
+    stat_summary(geom = "bar", fun.y = mean, position = "dodge") +
+    stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge", width = 0.2)  +
+    stat_compare_means()+ # global p value
+    stat_compare_means(label = "p.signif", method = "t.test", ref.group = Un_Sham, label.y = 60) +                 # Pairwise comparison against Unaffected, no treatment
+    stat_compare_means(comparisons = my_comparisons, label = "p.signif")+
+    theme_classic()+
+    scale_fill_manual(values=colors) +
+    ggtitle("Nnmt") +
+    theme(plot.title = element_text(hjust = 0.5, size=24))
+
+plot
+```
+
+
+Working graph to figure out dot plot - 
+NOTE: to plot medians, can use fun.data=median_iqr or fun.data=median_mad
+iqr = inner quartile range
+mad = median absolute deviation - i.e. the median of the absolute values of the residuls from overall median
+
+```{r}
+plot <- ggplot(filter(labeled_gois_FPKM, gene == "Nnmt"), aes(x=group, y = FPKM, fill=group)) +
+    geom_dotplot(binaxis='y', stackdir='center')+
+    stat_summary(fun.data=median_mad, size = 0.25)+
+    theme_classic()+
+    scale_fill_manual(values=colors) +
+    ggtitle("Nnmt") +
+    theme(plot.title = element_text(hjust = 0.5, size=24))
+
+plot
+```
 
 
 Now to (finally) make bar graphs for all genes of interest:
@@ -106,25 +149,5 @@ for (i in seq_along(gois)) {
 
 ```
 
-```{r}
-# calculate means and sd
-Un_Sham = "Unaffecteds (+/-)\nNo Treatment\n(n=6)"
-Un_Vanc = "Unaffecteds (+/-)\nVancomycin\n(n=6)"
-Af_Sh = "Affecteds (-/-)\nNo Treatment\n(n=6)"
-Af_Vanc = "Affecteds (-/-)\nVancomycin\n(n=6)"
-my_comparisons <- list( c(Un_Sham, Af_Sh), c(Af_Sh, Af_Vanc), c(Un_Sham, Un_Vanc))
 
-plot <- ggplot(filter(labeled_gois_FPKM, gene == "Nnmt"), aes(x=group, y = FPKM, fill=group)) +
-    stat_summary(geom = "bar", fun.y = mean, position = "dodge") +
-    stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge", width = 0.2)  +
-    stat_compare_means()+ # global p value
-    stat_compare_means(label = "p.signif", method = "t.test", ref.group = Un_Sham, label.y = 60) +                 # Pairwise comparison against Unaffected, no treatment
-    stat_compare_means(comparisons = my_comparisons, label = "p.signif")+
-    theme_classic()+
-    scale_fill_manual(values=colors) +
-    ggtitle("Nnmt") +
-    theme(plot.title = element_text(hjust = 0.5, size=24))
-
-plot
-```
 
