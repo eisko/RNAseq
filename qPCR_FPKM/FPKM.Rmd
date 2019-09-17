@@ -8,6 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(ggpubr)
 
 setwd("~/code/qPCR_FPKM")
 ```
@@ -37,7 +38,7 @@ relabeledDF
 ```
 ```{r}
 # select genes of itnerest
-gois <- c("Nnmt", "Nampt", "Nmnat1", "Nmnat2", "Nmnat3", "Nmrk1", "Nmrk2", "Sirt1", "Cd38", "Pparg", "Mat1a", "Mat2a", "Mat2b", "Amd1", "Gnmt", "Gamt", "Pemt", "Mtr", "Mtrr", "Bhmt", "Ahcy", "Cbs", "Aox1", "Aox2", "Cyp2e1")
+gois <- c("Nnmt", "Nampt", "Nmnat1", "Nmnat2", "Nmnat3", "Nmrk1", "Nmrk2", "Sirt1", "Cd38", "Pparg", "Mat1a", "Mat2a", "Mat2b", "Amd1", "Gnmt", "Gamt", "Pemt", "Mtr", "Mtrr", "Bhmt", "Ahcy", "Cbs", "Aox1", "Aox2", "Cyp2e1", "Sirt2", "Sirt3", "Sirt4", "Sirt5", "Sirt6", "Sirt7", "Ppargc1a")
 
 gois_FPKM <- relabeledDF %>% filter(external_gene_name %in% gois)
 
@@ -71,8 +72,6 @@ labeled_gois_FPKM
 # reorder and rename groups for plots
 labeled_gois_FPKM$group <- ordered(labeled_gois_FPKM$group, levels = c("Un_Sham", "Un_Vanc", "Af_Sh", "Af_Vanc"))
 
-labeled_gois_FPKM$group <- recode(labeled_gois_FPKM$group, Un_Sham = "Unaffecteds (+/-)\nNo Treatment\n(n=6)", Un_Vanc = "Unaffecteds (+/-)\nVancomycin\n(n=6)", Af_Sh = "Affecteds (-/-)\nNo Treatment\n(n=6)", Af_Vanc = "Affecteds (-/-)\nVancomycin\n(n=6)")
-
 ```
 
 
@@ -81,11 +80,21 @@ labeled_gois_FPKM$group <- recode(labeled_gois_FPKM$group, Un_Sham = "Unaffected
 Now to (finally) make bar graphs for all genes of interest:
 ```{r}
 
+# calculate means and sd
+Un_Sham = "Unaffecteds (+/-)\nNo Treatment\n(n=6)"
+Un_Vanc = "Unaffecteds (+/-)\nVancomycin\n(n=6)"
+Af_Sh = "Affecteds (-/-)\nNo Treatment\n(n=6)"
+Af_Vanc = "Affecteds (-/-)\nVancomycin\n(n=6)"
+my_comparisons <- list( c(Un_Sham, Af_Sh), c(Af_Sh, Af_Vanc), c(Un_Sham, Un_Vanc))
+
+
 for (i in seq_along(gois)) {
 
   plot <- ggplot(filter(labeled_gois_FPKM, gene == gois[i]), aes(x=group, y = FPKM, fill=group)) +
     stat_summary(geom = "bar", fun.y = mean, position = "dodge") +
     stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge", width = 0.2)  +
+    stat_compare_means()+
+    stat_compare_means(comparisons = my_comparisons, label = "p.signif")+
     theme_classic()+
     scale_fill_manual(values=colors) +
     ggtitle(gois[i]) +
@@ -95,5 +104,27 @@ for (i in seq_along(gois)) {
   
   }
 
+```
+
+```{r}
+# calculate means and sd
+Un_Sham = "Unaffecteds (+/-)\nNo Treatment\n(n=6)"
+Un_Vanc = "Unaffecteds (+/-)\nVancomycin\n(n=6)"
+Af_Sh = "Affecteds (-/-)\nNo Treatment\n(n=6)"
+Af_Vanc = "Affecteds (-/-)\nVancomycin\n(n=6)"
+my_comparisons <- list( c(Un_Sham, Af_Sh), c(Af_Sh, Af_Vanc), c(Un_Sham, Un_Vanc))
+
+plot <- ggplot(filter(labeled_gois_FPKM, gene == "Nnmt"), aes(x=group, y = FPKM, fill=group)) +
+    stat_summary(geom = "bar", fun.y = mean, position = "dodge") +
+    stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge", width = 0.2)  +
+    stat_compare_means()+ # global p value
+    stat_compare_means(label = "p.signif", method = "t.test", ref.group = Un_Sham, label.y = 60) +                 # Pairwise comparison against Unaffected, no treatment
+    stat_compare_means(comparisons = my_comparisons, label = "p.signif")+
+    theme_classic()+
+    scale_fill_manual(values=colors) +
+    ggtitle("Nnmt") +
+    theme(plot.title = element_text(hjust = 0.5, size=24))
+
+plot
 ```
 
