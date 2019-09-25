@@ -1,0 +1,135 @@
+---
+title: "qPCR2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(mefa)
+library(ggpubr)
+```
+
+```{r}
+data <- read.csv("Nnmt2all.csv")
+hk_gene <- as.symbol("Actin") # house keeping gene
+hk_genename <- "Actin"
+gois <- list(as.symbol("Nnmt"), as.symbol("Nampt"), as.symbol("Nmnat1"))
+gois_name <- c("Nnmt", "Nampt", "Nmnat1")
+pdata <- read.csv("Vanc_pdata.csv")
+# reference condition for analysis
+
+```
+
+
+```{r}
+# drop Nan/0 values
+clean <- drop_na(data)
+# average sample values
+# group by sample and Primer
+sorted <- clean %>% group_by(Sample, Primer)
+# calculate means
+means <- sorted %>% summarise(mean(Cq))
+# rename column so function doesn't get confused
+means <- means %>% rename("avg_Cq" = "mean(Cq)")
+# rearrange data so rows = samples and cols = genes
+means <- spread(means, Primer, avg_Cq)
+
+means
+
+write.csv(means, file = "qPCR2all_excel.csv")
+```
+
+```{r}
+# subtract housekeeping gene from gene(s) of interest for all samples
+
+for (gene in gois_name) { 
+  means[[paste("N", gene, sep="")]] <- means[[gene]] - means[[hk_genename]]
+}
+
+means
+```
+
+
+```{r}
+# extract needed info
+Nmeans <- select(means, starts_with("NN"), -starts_with("Nnmt"))
+Nmeans
+
+# add pdata
+final <- left_join(Nmeans, pdata, by = c("Sample" = "sample_id"))
+final
+
+# library(mefa) needed to repeat dfs
+# get control value dataframe
+ref <- final %>% filter(condition == "unaffected" & treatment == "sham")  %>% ungroup() %>% summarise_at(c("NNnmt", "NNampt", "NNmnat1"), mean)
+names(ref) <- c("NmntCtl", "NamptCtl", "Nmnat1Ctl")
+ref
+refdf <- rep(ref, 24)
+refdf
+```
+```{r}
+# calculate delta delta Ct
+deltadelta <- Nmeans[2:ncol(Nmeans)] - refdf
+deltadelta
+
+# 2^-deltadeltaCt
+logexpr <- as_data_frame(lapply(deltadelta, function(x) 2^-x))
+
+logexpr["Sample"] <- Nmeans[1]
+logexpr <- logexpr %>% select(Sample, everything())
+logexpr
+
+log2data <- left_join(logexpr, pdata, by = c("Sample" = "sample_id"))
+log2data
+```
+
+```{r}
+# make for ggplot, tidy
+plot_data <- log2data %>% rename(Nnmt = NNnmt, Nampt = NNampt, Nmnat1 = NNmnat1)
+plot_data <- plot_data %>% gather(key = "gene", value = "deltadeltalag2Cq", Nnmt, Nampt, Nmnat1)
+# reorder and rename groups for plots
+plot_data$group <- ordered(plot_data$group, levels = c("Un_Sham", "Un_Vanc", "Af_Sh", "Af_Vanc"))
+# recode
+plot_data$group <- recode(plot_data$group, Un_Sham = "Unaffecteds (+/-)\nNo Treatment\n(n=6)", Un_Vanc = "Unaffecteds (+/-)\nVancomycin\n(n=6)", Af_Sh = "Affecteds (-/-)\nNo Treatment\n(n=6)", Af_Vanc = "Affecteds (-/-)\nVancomycin\n(n=6)")
+
+
+
+plot_data
+```
+
+Set-up colors
+```{r colors, include = False}
+green <- "#70AD46" # unaffecteds, no treatment
+yellow <- "#FBBF07" # unaffecteds, vanc
+blue <- "#4370C3" # affecteds, no treatment
+orange <- "#ED7E2F" # affecteds, vanc
+colors <- c(green, yellow, blue, orange)
+```
+
+
+```{r}
+# plot data
+Un_Sham = "Unaffecteds (+/-)\nNo Treatment\n(n=6)"
+Un_Vanc = "Unaffecteds (+/-)\nVancomycin\n(n=6)"
+Af_Sh = "Affecteds (-/-)\nNo Treatment\n(n=6)"
+Af_Vanc = "Affecteds (-/-)\nVancomycin\n(n=6)"
+my_comparisons <- list( c(Un_Sham, Af_Sh), c(Af_Sh, Af_Vanc), c(Un_Sham, Un_Vanc))
+
+plot <- ggplot(filter(plot_data, gene == "Nnmt"), aes(x=group, y = deltadeltalag2Cq, fill=group)) +
+    stat_summary(geom = "bar", fun.y = mean, position = "dodge") +
+    stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge", width = 0.2)  +
+    stat_compare_means()+ # global p value
+    # stat_compare_means(label = "p.signif", method = "t.test", ref.group = Un_Sham, label.y = 60) +                 # Pairwise comparison against Unaffected, no treatment
+    stat_compare_means(comparisons = my_comparisons, label = "p.signif")+
+    theme_classic()+
+    scale_fill_manual(values=colors) +
+    ggtitle("Nnmt") +
+    theme(plot.title = element_text(hjust = 0.5, size=24))
+
+plot
+```
+
