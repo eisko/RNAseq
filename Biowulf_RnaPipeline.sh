@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #To run on sbatch type:
-# sbatch Biowulf_RnaPipeline.sh --cpus-per-task=8 --mem=20g 
+# sbatch Biowulf_RnaPipeline.sh --cpus-per-task=8 --mem=20g
 #SBATCH --job-name EI_01_190102
- 
+
 #Load needed module
 module load fastqc
 module load hisat
@@ -62,7 +62,7 @@ hisat_index=$HISAT_INDEXES/grcm38/genome
 #wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GCA_000001405.15_GRCh38_genomic.gff.gz
 # note: stringtie doesn't accept gff.gz format as dowloaded from NCBI
 # Use gunzip /PATH/genome.gff.gz to unzip file (gff file not too big)
-gtf=/data/$USER/ref/Mus_musculus.GRCm38.94.gtf
+gtf=/data/$USER/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf
 
 
 #set-up output file
@@ -172,7 +172,7 @@ echo "Start of samtools"
 start_samtools=$(date +%s)
 #Index bam files for visualization (e.g. for IGV)
 cd ${RnaSeq_home}/sorted
-samtools index -@ $SLURM_CPUS_PER_TASK ${filename}.bam 
+samtools index -@ $SLURM_CPUS_PER_TASK ${filename}.bam
 end_samtools=$(date +%s)
 runtime_samtools=$((${end_samtools}-${start_samtools}))
 echo "Samtools Index: $(bc -l <<< "${runtime_samtools}/60" | cut -c 1-5)">>$out_file

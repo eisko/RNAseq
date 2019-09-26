@@ -1,0 +1,29 @@
+#featureCounts swarm
+#to run:
+#swarm -f ../myswarms/featurecounts.swarm --time 15:00 -b 4 --job-name=featureCounts_swarm --module subread --merge-output
+#for i in $(seq -f %02g 1 24); do echo cd /data/\$USER/Vanc_RnaSeq/featurecounts\; featureCounts -T \$SLURM_CPUS_PER_TASK -p -a /data/$USER/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_${i}_counts.txt /data/\$USER/Vanc_RnaSeq/sorted/EI_${i}_sorted.bam; done
+
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_01_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_01_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_02_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_02_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_03_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_03_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_04_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_04_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_05_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_05_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_06_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_06_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_07_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_07_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_08_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_08_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_09_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_09_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_10_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_10_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_11_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_11_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_12_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_12_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_13_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_13_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_14_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_14_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_15_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_15_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_16_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_16_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_17_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_17_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_18_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_18_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_19_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_19_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_20_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_20_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_21_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_21_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_22_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_22_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_23_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_23_sorted.bam
+cd /data/$USER/Vanc_RnaSeq/featurecounts; featureCounts -T $SLURM_CPUS_PER_TASK -p -a /data/iskoec/Vanc_RnaSeq/ref/Mus_musculus.GRCm38.94.gtf -t exon -g gene_id -o EI_24_counts.txt /data/$USER/Vanc_RnaSeq/sorted/EI_24_sorted.bam
