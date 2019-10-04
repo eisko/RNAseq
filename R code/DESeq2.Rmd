@@ -1,0 +1,55 @@
+---
+title: "DESeq2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(DESeq2)
+library(stringr)
+library(ggplot2)
+
+setwd('~/code/RnaSeq/Deseq2')
+```
+
+## DESeq2
+
+Used tutorial/blog found here: https://digibio.blogspot.com/2017/11/rna-seq-analysis-hisat2-featurecounts.html
+
+```{r loadData}
+# Read the output from featurecounts
+counts=read.csv('~/code/RnaSeq/featurecounts/Vanc_RnaSeq_counts.txt', sep = "", head=T, skip=1, row.names="Geneid")
+pData <- read.csv("Vanc_pdata.csv")
+counts
+```
+
+```{r}
+# rename columns with desired sample names
+samples <- c('EI_01', 'EI_02', 'EI_03', 'EI_04', 'EI_05', 'EI_06', 'EI_07', 'EI_08', 'EI_09', 'EI_10', 'EI_11', 'EI_12', 'EI_13', 'EI_14', 'EI_15', 'EI_16', 'EI_17', 'EI_18', 'EI_19', 'EI_20', 'EI_21', 'EI_22', 'EI_23', 'EI_24')
+colnames(counts)[6:29] <- samples
+rownames(pData) <- samples
+```
+
+## Subset data for analysis with DESeq
+* create counts with desired samples
+* then do analysis
+```{r}
+# sham = affected vs. unaffected, no treatment, list unaffecteds first
+counts_sham <- cbind(counts[1:5], counts[18:23], counts[6:11])
+pData_sham <- rbind(pData[13:18,], pData[1:6,])
+
+# aff = vanc vs. no treatment, affecteds only, list no treatment first
+counts_aff <- cbind(counts[1:5], counts[6:17])
+pData_aff <- pData[1:12,]
+```
+
+
+## Sham analysis - comparing unaffected vs. affected, no treatment, unaffecteds in denominator
+```{r}
+#create deseq object
+dds=DESeqDataSetFromMatrix(countData = counts_sham[6:17])
+```
+
+
+
+
