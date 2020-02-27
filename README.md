@@ -44,5 +44,5 @@ Additional resources for learning RNAseq data analysis and necessary tools:
 
 Reviews of RNAseq:
 * General overview: [**Wang et al., 2009**](https://www.ncbi.nlm.nih.gov/pubmed/19015660)
-* In-depth review: [**Corney, 2013; updated 2018**](https://www.labome.com/method/RNA-seq-Using-Next-Generation-Sequencing.html)
+* In-depth review: [**Corney, 2013; updated 2018**](https://www.researchgate.net/publication/306291842_RNA-seq_Using_Next_Generation_Sequencing_A_comprehensive_review_of_RNA-seq_methodologies)
 
