@@ -27,5 +27,16 @@ See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files
 
 ---
 
-Additional resources for RNAseq analysis:
-* [**Powerpoint**](RNAseq\ info.pptx) I prepared for lab meeting. Includes overview and some explanation of pipeline
+Additional resources for learning RNAseq data analysis and necessary tools:
+* [**Powerpoint**](https://github.com/eisko/RNAseq/blob/master/RNAseq%20info.pptx) I prepared for lab meeting. Includes overview and some explanation of pipeline
+* Overview of RNAseq pipeline: [**Persea et al., 2016**](https://www.nature.com/articles/nprot.2016.095)
+* In-depth RNAseq pipeline tutorial: [**Griffith Lab**](https://github.com/griffithlab/rnaseq_tutorial)
+* General RNAseq pipeline overview: [**Dave Tang's Blog**](https://davetang.org/muse/2017/10/25/getting-started-hisat-stringtie-ballgown/)
+* To implement pipeline on local laptop: [**Conda/bioconda essentials**](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+* Cloud computing on biowulf: [**Biowulf Online Class**](https://hpc.nih.gov/training/intro_biowulf/)
+* Interacting with terminal: [**Unix/shell tutorial**](https://www.datacamp.com/courses/introduction-to-shell-for-data-science)
+
+Reviews of RNAseq:
+* General overview: [**Wang et al., 2009**](https://www.ncbi.nlm.nih.gov/pubmed/19015660)
+* In-depth review: [**Corney, 2013; updated 2018**](https://www.labome.com/method/RNA-seq-Using-Next-Generation-Sequencing.html)
+
