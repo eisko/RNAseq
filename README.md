@@ -28,4 +28,4 @@ See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files
 ---
 
 Additional resources for RNAseq analysis:
-* [**Powerpoint**](RNAseq info.pptx) I prepared for lab meeting. Includes overview and some explanation of pipeline
+* [**Powerpoint**](RNAseq\ info.pptx) I prepared for lab meeting. Includes overview and some explanation of pipeline
