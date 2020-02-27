@@ -1,6 +1,7 @@
 # RNAseq
-Scripts for RNAseq pipeline
+Scripts and info for RNAseq pipeline
 
+## Scripts
 See [**swarm outline**](https://github.com/eisko/RNAseq/blob/master/swarm%20outline) for the pipeline outline and a summary of commands used in swarm scripts on biowulf.
 
 See [**Biowulf_RnaPipeline.sh**](Biowulf_RnaPipeline.sh) for example sbatch script for processing a single sample and recording runtimes.
@@ -12,6 +13,9 @@ See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scr
 * [**ballgown_script.R**](R code/ballgown_script.R) - script used to generate differentially expressed genes (DEGs) for comparisons of different conditions
 * [**app.R**](R code/app.R) - Interactive shiny app to highlight genes of interest
 * [**pretty figures folder**](https://github.com/eisko/RNAseq/tree/master/R%20code/Pretty%20Figures) - files used to generate figures for presentations and posters
+
+---
+## Accessory Scripts
 
 See [**folders.sh**](https://github.com/eisko/RNAseq/blob/master/folders.sh) for bash script to generate proper folder structure before running swarm scripts
 
@@ -26,6 +30,8 @@ See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files
    * **PROJECT** - full path to project folder that contains data and proper file structure (see [**swarm outline**](https://github.com/eisko/RNAseq/blob/master/swarm%20outline) for file structure). 
 
 ---
+
+## External Links and Resources
 
 Additional resources for learning RNAseq data analysis and necessary tools:
 * [**Powerpoint**](https://github.com/eisko/RNAseq/blob/master/RNAseq%20info.pptx) I prepared for lab meeting. Includes overview and some explanation of pipeline
