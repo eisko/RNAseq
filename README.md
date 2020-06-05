@@ -10,9 +10,10 @@ See [**swarm scripts**](https://github.com/eisko/RNAseq/tree/master/swarm%20scri
 * Swarm scripts were run on sampels named EI01 through EI24
 
 See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data and make figures.
-* [**ballgown_script.R**](R code/ballgown_script.R) - script used to generate differentially expressed genes (DEGs) for comparisons of different conditions
-* [**app.R**](R code/app.R) - Interactive shiny app to highlight genes of interest
-* [**pretty figures folder**](https://github.com/eisko/RNAseq/tree/master/R%20code/Pretty%20Figures) - files used to generate figures for presentations and posters
+* [**Paper figures**](https://github.com/eisko/RNAseq/tree/master/R%20code/Pretty%20Figures) - Contains R Scripts and markdown files used to generate data and figures for paper
+* [**app.R**](https://github.com/eisko/RNAseq/blob/master/R%20code/app.R) - Interactive shiny app to highlight genes of interest
+  * For R tutorial with ballgown see scripts copied from [**Griffith Tutorial**](https://github.com/griffithlab/rnaseq_tutorial/tree/master/scripts) or find relevant scripts in [**Griffith R Scripts**]() folder.
+
 
 ---
 ## Accessory Scripts
@@ -35,8 +36,9 @@ See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files
 
 Additional resources for learning RNAseq data analysis and necessary tools:
 * [**Powerpoint**](https://github.com/eisko/RNAseq/blob/master/RNAseq%20info.pptx) I prepared for lab meeting. Includes overview and some explanation of pipeline
-* Overview of RNAseq pipeline: [**Persea et al., 2016**](https://www.nature.com/articles/nprot.2016.095)
+* Overview of RNAseq pipeline: [**Pertea et al., 2016**](https://www.nature.com/articles/nprot.2016.095)
 * In-depth RNAseq pipeline tutorial: [**Griffith Lab**](https://github.com/griffithlab/rnaseq_tutorial)
+  * UPDATE: new/updated tutorial from Griffith lab that reviews mroe complex tools that goes beyond the Pertea pipeline: [**RNAseq**](https://rnabio.org/course/)
 * General RNAseq pipeline overview: [**Dave Tang's Blog**](https://davetang.org/muse/2017/10/25/getting-started-hisat-stringtie-ballgown/)
 * To implement pipeline on local laptop: [**Conda/bioconda essentials**](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 * Cloud computing on biowulf: [**Biowulf Online Class**](https://hpc.nih.gov/training/intro_biowulf/)
