@@ -1,0 +1,267 @@
+---
+title: "edgeR PCA clean"
+output: html_document
+---
+
+See: https://bioinformatics-core-shared-training.github.io/cruk-bioinf-sschool/Day3/rnaSeq_DE.pdf
+Also see: http://www.nathalievialaneix.eu/doc/html/TP1_normalization.html
+ - for comparison of normalization methods and generation of PCA from edgeR
+for tutorial and code used below
+Also used code for plotPCA in DESeq2 package to figure out filtering/norm steps for PCA:
+  - https://github.com/mikelove/DESeq2/blob/master/R/plots.R
+
+```{r setup, include=FALSE}
+library("ggplot2")
+library("edgeR")
+library("tidyverse")
+library("DESeq2")
+library("stringr")
+library("factoextra")
+library("FactoMineR")
+library("biomaRt")
+
+# colors
+blue <- "#4370C3"
+green <- "#70AD46"
+orange <- "#EC7D2F"
+yellow <- "#FDB40B"
+
+
+setwd("~/Documents/quarantine working files/paperfigs pics/rnaseq fig")
+```
+
+```{r}
+input <- read.csv("~/code/RnaSeq/edgeR/edgeR_gene_input.csv")
+pData <- read.table("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/R/Vanc_pdata_fig.csv", header= TRUE, sep=",", allowEscapes = TRUE)
+```
+
+```{r}
+# create dgList object
+counts <- as.matrix(input[,2:25])
+genes <- input$gene_id
+dgList <- DGEList(counts=counts, genes=genes, samples = pData)
+```
+
+```{r}
+# only retain genes "at least 1cpm reads in at least two samples (cpm=counts per million)"
+countsPerMillion <- cpm(dgList)
+countCheck <- countsPerMillion > 1
+keep <- which(rowSums(countCheck) >= 2)
+dgList <- dgList[keep,]
+```
+
+```{r}
+dgListN <- calcNormFactors(dgList, method="TMM")
+```
+
+## MDS plot
+  - In tutorial for edgeR, uses inherent plotMDS() to make MDS plot
+  - In general, takes top 500 genes, log transforms, then plots MDS
+  - I made my own function (based on DESeq2 plotPCA()) to generate similar PCA plots
+  
+# PCA plots
+**PCA function**
+```{r}
+# function takes DGElist as input, gives PCA plot as output
+# subset DGEList object before input, also need to adjust colors after output
+makePCAplot <- function(object, ntop=500) {
+  
+  # prepare data for PCA, should be run AFTER filtering and normalization
+  pseudo_TMM <- log2(cpm(object) + 1)
+
+  # select ntop (default = 500) genes with highest variance across samples/rows
+  rv <- rowVars(pseudo_TMM)
+    select <- order(rv, decreasing = TRUE)[seq_len(min(ntop, 
+        length(rv)))]
+    
+    # run pca
+    pca <- prcomp(t(pseudo_TMM[select, ]))
+    
+    # create dataframe for ggplot
+    df_pca <- as.data.frame(pca$x)
+    # Add labels for graph
+    df_pca$Group <- object$samples$Group
+    df_pca$Sex <- object$samples$Sex
+    
+    # calculate percent variance, and make percentage labels for PCA graph
+    percentVar <- round(pca$sdev^2 / sum(pca$sdev^2) * 100, 2)
+    percentage <- paste(colnames(df_pca), "(", paste( as.character(percentVar), "%", ")", sep=""))
+    
+    # create ggplot
+    p<-ggplot(df_pca,aes(x=PC1,y=PC2,color=Group,shape=Sex))+
+    geom_point()+
+    theme(panel.background = element_blank(),
+          panel.border=element_rect(fill=NA),
+          panel.grid.major = element_line(colour="grey90", size=0.5),
+          panel.grid.minor = element_blank(),
+          strip.background=element_blank(),
+          axis.title = element_text(colour="black", face="bold", size=12),
+          axis.text=element_text(colour="black"),
+          axis.ticks=element_line(colour="black"),
+          plot.margin=unit(c(1,1,1,1),"line"),
+          plot.title = element_text(hjust = 0.5),
+          legend.text = element_text(size = 12),
+          legend.key=element_rect(fill=NA)
+          )+
+    xlim(-65, 45) +
+    ylim(-30, 30) +
+    xlab(percentage[1]) + 
+    ylab(percentage[2])+
+    geom_point(size=5) +
+    guides(color = guide_legend(order = 1, override.aes = list(shape=15)),
+         shape = guide_legend(order = 2)) +
+    theme(legend.key.size = unit(1.15, "cm"))
+    
+    
+    
+  return(p)
+}
+```
+
+```{r}
+all_pca <- makePCAplot(dgListN) +
+  scale_color_manual(values=c(blue, orange, green, yellow))
+
+all_pca
+```
+
+```{r}
+ggsave("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/pics/PCA_all_FINAL.tiff", all_pca, width=7, height=4)
+```
+
+# CONTRIBUTIONS OF GENES TO PCs
+- see: http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials/
+for tutorial
+```{r}
+ # prepare data for PCA, should be run AFTER filtering and normalization
+  pseudo_TMM <- log2(cpm(dgListN) + 1)
+
+  # select ntop (default = 500) genes with highest variance across samples/rows
+  rv <- rowVars(pseudo_TMM)
+    select <- order(rv, decreasing = TRUE)[seq_len(min(500, 
+        length(rv)))]
+    
+  pca_input <- t(pseudo_TMM[select, ])
+  
+pca_extra <- PCA(pca_input)
+
+pca <- prcomp(t(pseudo_TMM[select, ]))
+
+
+  
+```
+```{r}
+results <- get_pca_var(pca)
+head(results$contrib)
+fviz_cos2(pca, choice = "var", axes = 1:2)
+fviz_pca_var(pca, col.var = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             repel = FALSE # Avoid text overlapping
+             )
+```
+
+## Get contributions of variables to PCs
+```{r}
+head(results$contrib, 4)
+# show top 10 genes contributing to PC1
+fviz_contrib(pca, choice = "var", axes = 1, top = 25)
+# show top 10 genes contributing to PC2
+fviz_contrib(pca, choice = "var", axes =2, top=25)
+```
+
+# Get gene names and variable/gene contributions for PCA
+```{r}
+# get labeled ensembl genes used in PCA
+genes <- tibble::rownames_to_column(dgListN$genes, "geneN")
+
+
+contributions <- tibble::rownames_to_column(as.data.frame(results$contrib), "geneN")
+
+topPC1 <- contributions %>% arrange(desc(Dim.1)) %>% select(geneN, Dim.1)
+```
+
+
+
+
+# Aff_sh vs. unaff_sham (sham)
+Samples = EI_01-EI_06, EI_13-EI_18
+```{r}
+dgList1 <- dgListN[,1:18]
+dgList1 <- dgList1[,-7:-12]
+
+pca1 <- makePCAplot(dgList1) +
+  scale_color_manual(values=c(blue, green))
+pca1 
+```
+```{r}
+ggsave("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/pics/PCA_sham_FINAL.tiff", pca1, width=7, height=4)
+```
+
+
+# Aff_sh vs. Aff_vanc (aff)
+Samples = EI_01-EI_06, EI_07-EI12
+```{r}
+dgList2 <- dgListN[,1:12]
+
+pca2 <- makePCAplot(dgList2) +
+  scale_color_manual(values=c(blue, orange))
+pca2
+```
+```{r}
+ggsave("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/pics/PCA_aff_FINAL.tiff", pca2, width=7, height=4)
+```
+
+
+# Unaf_vanc vs. Aff_vanc (vanc)
+Samples = EI_19-EI_EI24, EI_07-EI_12
+```{r}
+dgList3 <- dgListN[,7:24]
+dgList3 <- dgList3[,-7:-12]
+
+pca3 <- makePCAplot(dgList3) +
+  scale_color_manual(values=c(orange, yellow))
+pca3
+```
+
+```{r}
+ggsave("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/pics/PCA_vanc_FINAL.tiff", pca3, width=7, height=4)
+```
+
+# Unaff_sh_ vs. Unaf_vanc (unaff)
+Samples = EI_13-EI_18, EI_19-EI_EI24
+```{r}
+dgList4 <- dgListN[,13:24]
+
+pca4 <- makePCAplot(dgList4) +
+  scale_color_manual(values=c(green, yellow))
+pca4
+```
+```{r}
+ggsave("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/pics/PCA_unaff_FINAL.tiff", pca4, width=7, height=4)
+```
+
+# Unaf_sham vs. aff_vanc (Unsh_Afva)
+Samples = EI_13-EI_18, EI_07-EI12
+```{r}
+dgList5 <- dgListN[,7:18]
+
+pca5 <- makePCAplot(dgList5) +
+  scale_color_manual(values=c(orange, green))
+pca5
+```
+```{r}
+ggsave("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/pics/PCA_AfVa_UnSh_FINAL.tiff", pca5, width=7, height=4)
+```
+
+# af_sham vs. unaf_vanc (AfSh_UnVa)
+Samples = EI_01-EI_06, EI_19-EI_24
+```{r}
+dgList6 <- dgListN[,-7:-18]
+
+pca6 <- makePCAplot(dgList6) +
+  scale_color_manual(values=c(blue, yellow))
+pca6
+```
+```{r}
+ggsave("~/Documents/quarantine working files/paperfigs pics/rnaseq fig/pics/PCA_AfSh_UnVa_FINAL.tiff", pca6, width=7, height=4)
+```

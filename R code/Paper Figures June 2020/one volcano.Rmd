@@ -1,0 +1,96 @@
+---
+title: "volcanos"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(genefilter)
+library(dplyr)
+library(devtools)
+library(gplots)
+library(ggplot2)
+library(ggfortify)
+library(calibrate)
+library(cluster)
+library(ggrepel)
+library(ballgown)
+```
+
+```{r}
+setwd("~/Documents/quarantine working files/paperfigs pics/rnaseq fig")
+
+load("~/code/RnaSeq/ballgown/Vanc_bg.rda")
+
+pData <- read.csv("~/code/RnaSeq/ballgown/Vanc_pdata2.csv")
+
+
+```
+```{r}
+goi <- c("Mmaa", "Fgf21")
+i <- -1 # after looking at Mmaa values, decided to inverse
+q <- 0.1
+fch <- 1
+```
+
+# Volcano for UnaffSham vs. AffVanc
+```{r}
+# compare aff_vanc vs unaff_sham
+BG_UnSh <- subset(bg, "group=='Un_Vanc' | group=='Af_Sh'", genomesubset=FALSE)
+pData <- filter(pData, Group == "Unaffected - Vancomycin" | Group == "Affected - No Treatment")
+```
+
+
+
+```{r}
+bg_filt = subset(BG_UnSh,"rowVars(texpr(BG_UnSh)) > 1", genomesubset=TRUE)
+bg_filt_table = texpr(bg_filt , 'all')
+bg_filt_gene_names = unique(bg_filt_table[, 9:10])
+bg_filt_table
+```
+
+```{r}
+results_genes = stattest(bg_filt, feature="gene", covariate="group", getFC=TRUE, meas="FPKM")
+results_genes = merge(results_genes, bg_filt_gene_names, by.x=c("id"), by.y=c("gene_id"))
+gene_results <- results_genes
+
+# write.csv(results_genes, "./Volcano tables/UnSh_AfVa_gene_results.csv")
+```
+
+```{r}
+res <- data.frame("ensembl_id" = gene_results$id,
+                     "gene_name" = gene_results$gene_name,
+                     "log2fc" = i*log2(gene_results$fc), # needed to multiply by -1 to get right up/down orientation in volcano plot
+                     "pvalue" = gene_results$pval,
+                     "qvalue" = gene_results$qval,
+                     "significance" = ifelse(gene_results$qval < q, paste("FDR < ",q), "Not Significant"))
+
+# create lists of genes to highlight in volcano graph
+genes <- subset(res, gene_name %in% goi)
+res2 <- arrange(res, pvalue)
+genes_15 <- res2[1:15,]
+```
+
+```{r}
+
+######## ADJUST COLOR SCALE
+volcano <- ggplot(res, aes(x = log2fc, y = -log10(pvalue), color=significance)) +
+  geom_point(alpha = 0.75) + 
+  scale_color_manual(values = c("red", "black")) + # for sham/vanc/unaff
+  theme_bw(base_size = 8) + theme(legend.position = "bottom")  +
+  geom_label_repel(data=genes_15, label=genes_15$gene_name, colour="black")+ 
+  geom_point(data=genes, colour="purple") +  # this adds a rpurpleed point
+  geom_label_repel(data=genes, label=genes$gene_name, colour="purple")+ # goi text label
+  xlab(expression('Log'['2']*' Fold Change'))+
+  ylab(expression('-Log'['10']*italic('P')))+
+  theme(legend.title=element_blank())+
+  xlim(-8,8)+
+  ylim(0,6) +
+  theme(axis.title = element_text(face="bold", size=20),
+        legend.text = element_text(size=20))
+volcano
+```
+
+```{r}
+ggsave("./pics/volcano_UnVa_AfSh.tiff", plot = volcano, width = 6, height = 6)
+```
+

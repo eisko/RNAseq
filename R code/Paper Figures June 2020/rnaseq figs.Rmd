@@ -1,0 +1,316 @@
+---
+title: "RNAseq paper figs"
+output: html_document
+---
+
+
+```{r}
+library(genefilter)
+library(tidyverse)
+library(plotly) # for 3D PCA
+library(devtools)
+library(gplots)
+library(ggplot2)
+library(ggfortify)
+library(calibrate)
+library(cluster)
+library(ggrepel)
+library(ballgown)
+
+# recommended by Oleg:
+# library(modelr)
+# library(plot3D)
+```
+
+```{r}
+setwd("~/Documents/quarantine working files/paperfigs pics/rnaseq fig")
+
+load("~/code/RnaSeq/ballgown/Vanc_bg.rda")
+
+pData <- read.csv("~/code/RnaSeq/ballgown/Vanc_pdata2.csv")
+```
+
+
+```{r}
+# list of genes of interest (goi) to plot on volcano plot
+goi <- c("Mmaa", "Pigr", "Fgf21", "Nnmt")
+
+# colors
+# colours <- c("#4370C3", "#70AD46") # for sham c(blue, green)
+# colours <- c("#4370C3", "#EC7D2F") # for aff c(blue, orange)
+blue <- "#4370C3"
+green <- "#70AD46"
+orange <- "#EC7D2F"
+yellow <- "#FDB40B"
+```
+
+```{r}
+# if sham/vanc, covariate = condition
+# if aff/unaff, covariate = treatment
+file <- "sham"
+covariate <- "condition"
+q <- 0.1
+fch <- 1
+i <- -1 # if sham/vanc group
+```
+
+
+
+
+
+```{r}
+theme<-theme(panel.background = element_blank(),
+             panel.border=element_rect(fill=NA),
+             # panel.grid.major = element_line(colour="grey90", size=0.5),
+             # panel.grid.minor = element_blank(),
+             strip.background=element_blank(),
+             axis.title = element_text(colour="black", face="bold"),
+             axis.text=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),
+             plot.margin=unit(c(1,1,1,1),"line"),
+             plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r}
+#SHAM
+# compare aff_sham vs unaff_sham
+BG <- subset(bg, "treatment=='sham'", genomesubset=FALSE)
+pData_sham <- filter(pData, Treatment=="No Treatment")
+```
+
+
+
+```{r}
+transcript_fpkm = texpr(BG, 'FPKM')
+transcript_fpkm_log2 = log2(transcript_fpkm+1)
+
+```
+
+
+```{r}
+################### VOLCANO PLOT ##########################
+################# ADJUST ##########
+gene_results <- read.delim(paste("~/code/RnaSeq/ballgown/vanc_gene_results.tsv"))
+
+res <- data.frame("ensembl_id" = gene_results$id,
+                     "gene_name" = gene_results$gene_name,
+                     "log2fc" = i*log2(gene_results$fc), # needed to multiply by -1 to get right up/down orientation in volcano plot
+                     "pvalue" = gene_results$pval,
+                     "qvalue" = gene_results$qval,
+                     "significance" = ifelse(gene_results$qval < q, paste("FDR < ",q), "Not Significant"))
+```
+
+
+```{r}
+### create list of genes that are significant - maybe top 10 genes?
+genes <- subset(res, gene_name %in% goi)
+res2 <- arrange(res, pvalue)
+res2
+
+genes_15 <- res2[1:15,]
+genes_15
+```
+
+```{r}
+
+######## ADJUST COLOR SCALE?
+volcano <- ggplot(res, aes(x = log2fc, y = -log10(pvalue), color=significance)) +
+  geom_point(alpha = 0.75) + 
+  scale_color_manual(values = c("red", "black")) + # for sham
+  # scale_color_manual(values = c("black", "red")) + # for aff
+  theme_bw(base_size = 8) + theme(legend.position = "bottom")  +
+  # geom_point(data=genes, colour="purple") +  # this adds a red point
+  # geom_label_repel(data=genes, label=genes$gene_name, colour="purple")+ # goi text label
+  geom_point(data=genes_15, colour="blue") +  # this adds a red point
+  geom_label_repel(data=genes_15, label=genes_15$gene_name, colour="blue")+ 
+  xlab(expression('Log'['2']*' Fold Change'))+
+  ylab(expression('-Log'['10']*italic('P')))+
+  theme(legend.title=element_blank())+
+  xlim(-8,8)+
+  ylim(0,6)
+```
+
+```{r}
+volcano
+```
+
+
+
+############# CREATE SINGLE PCA FOR ALL SAMPLES
+
+```{r}
+# colors
+blue <- "#4370C3"
+green <- "#70AD46"
+orange <- "#EC7D2F"
+yellow <- "#FDB40B"
+```
+
+
+```{r}
+transcript_fpkm = texpr(bg, 'FPKM')
+transcript_fpkm_log2 = log2(transcript_fpkm+1)
+
+pca = prcomp(t(transcript_fpkm_log2))
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out <- as.data.frame(pca$x)
+### change labels to male or female
+########################### ADJUST for Condition (sham/vanc) or Treatment (aff/unaff)
+df_out$Group <- pData$Group
+df_out$Sex <- pData$Sex
+df_out
+```
+
+```{r}
+# calculate percentages
+percentage <- round(pca$sdev^2 / sum(pca$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage <- paste( colnames(df_out), "(", paste( as.character(percentage), "%", ")", sep="") )
+```
+
+
+```{r}
+
+### PCA with all samples
+p<-ggplot(df_out,aes(x=PC1,y=PC2,color=Group,shape=Sex))+
+  geom_point()+
+  theme(panel.background = element_blank(),
+        panel.border=element_rect(fill=NA),
+        panel.grid.major = element_line(colour="grey90", size=0.5),
+        panel.grid.minor = element_blank(),
+        strip.background=element_blank(),
+        axis.title = element_text(colour="black", face="bold"),
+        axis.text=element_text(colour="black"),
+        axis.ticks=element_line(colour="black"),
+        plot.margin=unit(c(1,1,1,1),"line"),
+        plot.title = element_text(hjust = 0.5))+
+  xlab(percentage[1]) + 
+  ylab(percentage[2])+
+  geom_point(size=5)+
+  scale_color_manual(values=c(blue, orange, green, yellow))
+p
+```
+
+
+```{r}
+# output tiff for PCA
+tiff(filename = paste("pics/PCA_all.tiff"), width = 7, height = 4, units = "in", res = 300)
+p
+dev.off()
+```
+
+
+```{r}
+df_out
+percentage
+```
+see:  https://www.datanovia.com/en/blog/how-to-create-a-ggplot-like-3d-scatter-plot-using-plotly/
+for 3d scatter example
+
+```{r}
+# Create the plot
+q <- plot_ly(
+  df_out, x = ~PC1, y = ~PC2, z = ~PC3,
+  color = ~Group, colors = c(blue, orange, green, yellow)
+  ) %>%
+  add_markers() %>%
+  layout(
+    scene = list(xaxis = list(title = percentage[1]),
+        yaxis = list(title = percentage[2]),
+        zaxis = list(title = percentage[3]))
+        )
+
+q
+# p<-ggplot(df_out,aes(x=PC1,y=PC2,color=Group,shape=Sex))+
+#   geom_point()+
+#   theme(panel.background = element_blank(),
+#         panel.border=element_rect(fill=NA),
+#         panel.grid.major = element_line(colour="grey90", size=0.5),
+#         panel.grid.minor = element_blank(),
+#         strip.background=element_blank(),
+#         axis.title = element_text(colour="black", face="bold"),
+#         axis.text=element_text(colour="black"),
+#         axis.ticks=element_line(colour="black"),
+#         plot.margin=unit(c(1,1,1,1),"line"),
+#         plot.title = element_text(hjust = 0.5))+
+#   xlab(percentage[1]) + 
+#   ylab(percentage[2])+
+#   geom_point(size=5)+
+#   scale_color_manual(values=c(blue, orange, green, yellow))
+
+
+```
+
+```{r}
+transcript_fpkm = texpr(bg, 'FPKM')
+transcript_fpkm_log2 = log2(transcript_fpkm+1)
+
+normalize <- function(x) {num <- x - min(x)
+                          denom <- max(x) - min(x)
+                          return (num/denom)
+}
+vanc_norm <- lapply(transcript_fpkm_log2, normalize)
+
+```
+
+```{r}
+vanc_norm <- lapply(transcript_fpkm_log2, normalize)
+pca = prcomp(t(vanc_norm))
+
+### see blog for example code
+# http://huboqiang.cn/2016/03/03/RscatterPlotPCA
+df_out <- as.data.frame(pca$x)
+### change labels to male or female
+########################### ADJUST for Condition (sham/vanc) or Treatment (aff/unaff)
+df_out$Group <- pData$Group
+df_out$Sex <- pData$Sex
+df_out
+```
+
+```{r}
+# calculate percentages
+percentage <- round(pca$sdev^2 / sum(pca$sdev^2) * 100, 2) # eigen values = square of stddev, traditionally % = proporation of variance, which is based on EIGEN values not std dev
+
+percentage <- paste( colnames(df_out), "(", paste( as.character(percentage), "%", ")", sep="") )
+```
+
+
+
+```{r}
+normalize <- function(x) {num <- x - min(x)
+                          denom <- max(x) - min(x)
+                          return (num/denom)
+                          }
+vanc_norm <- as.data.frame(lapply(vanc, normalize))
+```
+
+```{r}
+library(modelr)
+library(plot3D)
+library(plot3Drgl)
+
+# df_out is usable dataframe
+
+
+
+
+
+scatter3D(df_out$PC1, df_out$PC2, df_out$PC3, 
+          type = "h", pch = 18, 
+          bty ="g", cex = 2, ticktype = "detailed",
+          xlab = percentage[1], ylab = percentage[2], zlab = percentage[3]
+          )
+
+scatter3D(df_out$PC1, df_out$PC2, df_out$PC3, bty = "b2",  type = "h", 
+           ticktype = "detailed", pch = 19, cex = 2,
+          colvar = as.integer(pData$Group),
+          col = c(blue, orange, green, yellow))
+
+plotrgl()
+```
+
+
+
