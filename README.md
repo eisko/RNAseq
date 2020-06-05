@@ -12,7 +12,7 @@ See [**swarm scripts**](https://github.com/eisko/RNAseq/tree/master/swarm%20scri
 See [**R Code**](https://github.com/eisko/RNAseq/tree/master/R%20code) for R scripts used to process data and make figures.
 * [**Paper figures**](https://github.com/eisko/RNAseq/tree/master/R%20code/Pretty%20Figures) - Contains R Scripts and markdown files used to generate data and figures for paper
 * [**app.R**](https://github.com/eisko/RNAseq/blob/master/R%20code/app.R) - Interactive shiny app to highlight genes of interest
-  * For R tutorial with ballgown see scripts copied from [**Griffith Tutorial**](https://github.com/griffithlab/rnaseq_tutorial/tree/master/scripts) or find relevant scripts in [**Griffith R Scripts**]() folder.
+* For R tutorial with ballgown see scripts copied from [**Griffith Tutorial**](https://github.com/griffithlab/rnaseq_tutorial/tree/master/scripts) or find relevant scripts in [**Griffith R Scripts**]() folder.
 
 
 ---
