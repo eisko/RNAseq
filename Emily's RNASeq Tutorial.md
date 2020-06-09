@@ -165,5 +165,5 @@ stringtie -p 2 -G \path\to\genome_annotation.gtf -e -B -o samplename_transcripts
 - `B` specifies to create files (i.e. `.ctab` files) needed for ballgown analysis
 - `-o samplename_transcripts.gtf` specifies output `.gtf` file containing info on transcripts identified in the data, does not contain information on 'count' data i.e. how many reads found per sample
 
-########################
+**************************
 # R Code Tutorial
