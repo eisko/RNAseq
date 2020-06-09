@@ -187,7 +187,7 @@ Many of these packages (e.g. `ballgown` and `edgeR`) can be installed through [*
 Below, you can find the code I used to analyze the data. I have annotated it, but it may need tweaking to fit your data and your analysis.
 
 Load the following packages:
-```r
+```R
 library(genefilter)
 library(dplyr)
 library(devtools)
