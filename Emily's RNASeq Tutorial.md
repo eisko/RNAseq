@@ -184,7 +184,8 @@ Many of these packages (e.g. `ballgown` and `edgeR`) can be installed through [*
 ## Step 1: Differential Expression analysis
 ### Ballgown
 [**Ballgown Installation**](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) \
-[**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html) <- highly recommend checking this out. Great vignette and info on how to use the package and what else it can do!
+[**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html) <- highly recommend checking this out. Great vignette and info on how to use the package and what else it can do! \
+[**Ballgown Paper**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4792117/) 
 
 Below, you can find the code I used to analyze the data. I have annotated it, but it may need tweaking to fit your data and your analysis.
 
@@ -249,6 +250,11 @@ This step will likely take awhile and create a large object. I suggest saving it
 saveRDS("path/to/ballgown/output/bg.rds")
 ```
 
+Now that the ballgown object is created, we can inspect the data by generating a table of transcript or gene expression values. See the [**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html) for more information and options.\
+- `texpr(bg)` will generate a table where columns are individual samples, rows are transcripts, and each entry is the FPKM observed in each sample for that specified transcript
+- `gexpr(bg)` will generate a similar table but each row is a gene instead of a transcript
+
+
 The next step is to import metadata (i.e. 'phenotypic data') and assign it to the ballgown object. This information is generally stored in a `.csv` or a `.tsv` file, which can be created in excel. My metadata file looks something like this:
 ```
 sample_id,condition,treatment,sex,group
@@ -280,6 +286,40 @@ EI_24,unaffected,vancomycin,M,Un_Vanc
 
 NOTE: make sure the first column (`sample_id`) *exactly* matches the sample names used to label the folders containing ballgown input data (e.g. `sample01` in the example file structure above).
 
+Import the metadata and assign it to the pData slot of the ballgown object.
+```r
+metadata <- read.csv("path/to/metadata.csv")
 
+pData(bg) <- metadata
+pData(bg)
+```
 
+Determine what samples you want to compare and across what variable. For example, if I wanted to determine what genes are differentially expressed in the disease state, I would need to restrict my analysis to samples under the `sham` treatment and then compare the `affected` and `unaffected` conditions.
 
+To restrict the analysis to only animals under the sham treatment, I would create a subsetted ballgown object:
+```r
+bg_subset <- subset(bg, "treatment=='sham'", genomesubset=FALSE)
+```
+
+Before completing the statistical analysis, low abundance transcripts must be filtered out to reduce noise and the sparseness in our dataset. The following code will discard genes in which the variance across samples is less than 1 (i.e. the gene has very low abundance in the overally dataset):
+```r
+bg_filt = subset(bg_subset,"rowVars(texpr(bg_subset)) > 1", genomesubset=TRUE)
+```
+
+Next, we will compare expression data across a variable in the metadata. In my case, I have restricted to the samples to `sham` treatment, and I would like to compare across the `'condition'` (i.e. `affected` vs. `unaffected`). Ballgown uses the normalization and anlysis implemented in the `limma` package. To learn more and find more references on the statistical analysis used in ballgown see the [**Ballgown Paper**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4792117/) or [**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html). To generate the statistical analysis run:
+```r
+results_genes = stattest(bg_filt, feature="gene", covariate="condition", getFC=TRUE, meas="FPKM")
+```
+- `bg_filt` the ballgown object to use for the analysis
+- `feature="gene"` the feature to be used for the analysis. Other options include `"transcript"` or `"exon"`
+- `covariate="condition"` a column specified in the metadata/pData to sort and compare the samples into different groups. There must be at least 2 attributes specified in the variable (in my case `affected` and `unaffected`) in order for ballgown to compare across 2 different groups.
+- `getFC=TRUE` ensures fold change values are returned
+- `meas="FPKM"` specifies what measure to use for the analysis, in this case `FPKM` is used.
+
+The output of `stattest()` is a table containing the results of the statistical test. It should look something like this:
+```r
+head(results_genes)
+```
+
+```
+```
