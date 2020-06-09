@@ -112,12 +112,55 @@ hisat2 --rna-strandness RF --dta -p 2  -x path/to/reference/GRCm38/genome \
 -S path/to/output/folder/samplename.sam \
 --summary-file path/to/output/folder/samplename_alignStats.txt
 ```
-- `--rna-strandness RF`
-- `--dta`
-- `-p`
-- `-x path/to/reference/GRCm38/genome`
-- `-1 path/to/samplename_R1.fq.gz -2 path/to/samplename_R2.fq.gz`
-- `-S path/to/output/folder/samplename.sam`
-- `--summary-file path/to/output/folder/samplename_alignStats.txt`
+- `--rna-strandness RF` indicates reads are paired whether the first file (`-1`) is forward or reverse read
+- `--dta` report alignments tailored for downstream assemblers. Needed to ensure output can be used for **stringtie**
+- `-p` indicates number of threads/cpus to use to process data. Home laptop I use 2, biowulf I use $SLURM_CPUS_PER_TASK
+- `-x path/to/reference/GRCm38/genome` details path to reference genome. Provide full path to where genome.ht2 files are located. Make sure to also specify the shared prefix of all the reference files in the folder, in this case the prefix of each file is `genome`. I recommend providing the FULL path
+- `-1 path/to/samplename_R1.fq.gz -2 path/to/samplename_R2.fq.gz` provide full path to forward and reverse reads for a single sample
+- `-S path/to/output/folder/samplename.sam` provide the path and name of file you want as output. If not specified, hisat will create a `samplename.sam` file in the directory where you run the command
+- `--summary-file path/to/output/folder/samplename_alignStats.txt` will create a textfile with a summary of the read alignments (i.e. how many reads did or did not align)
 
+## Step 4: Sort
+### Samtools
+[**Samtools Documentation**](http://www.htslib.org/)
+[**Samtools Manual**](http://www.htslib.org/doc/samtools.html)
 
+**Input:** sam file as input (be warned, these are VERY large files!)
+**Output:** bam file (a compressed version of the sam file)
+
+The purpose of this step is to compress the Sequence Alignment/Map (SAM) file into a bam (binary version of a sam file) format. Bam files are much smaller and easier for the computer to handle. Each line in the file documents a read alignment to the reference genome. You can learn morea bout sam/bam file format [**here**](https://samtools.github.io/hts-specs/SAMv1.pdf).
+
+This step also sorts the alignemnts by where the order they appear in the genome (alignments to chromosome 1 first, chr2...). This step is needed for better `stringtie` assembly.
+```
+samtools sort -@ 2 -o /path/to/output/samplename_sorted.bam /path/to/input/samplename.sam 
+```
+- `sort` the function you want samtools to do. Samtools can perform other useful function (like `samtools view`) refer to the manual to explore other samtools functions that may be useful
+- `-@` specifies how many threads to use to run code
+- `-o /path/to/output/samplename_sorted.bam` specifies the output `.bam` file to be created
+- `/path/to/input/samplename.sam` specify the input `.sam` file to perform the function on. Note: the input does not require a flag
+
+After creating the `.bam` files, I would recommend deleting (using the unix `rm` function) the `.sam` files as they take up a lot of space and all subsequent steps can be run using the `.bam` files. 
+
+If you would like to visually inspect the `.bam` files using [**IGV**](http://software.broadinstitute.org/software/igv/), you first need to create a bam index using the samtools index function (`samtools samtools index /path/to/samplename_sorted.bam`).
+
+## Step 5: Assembly
+### Stringtie
+[**Stringtie Documentation**](https://ccb.jhu.edu/software/stringtie/)
+[**Stringtie Manual**](https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual)
+
+**Input:** bam file and genome annotation file (`.gff` or `.gtf` file will work)
+**Output:** several files in a `samplename` folder
+- `sample_transcripts.gtf` contains information on all of the transcripts identified using stringtie
+- `.ctab` files (there should be 5 of them per file). These files are used as input for ballgown
+- `samplename_gene_abundances.tsv` a matrix where columns are samples, rows are genes, and entries are the raw counts of reads/gene/sample. This can be used as an input count matrix into RNASeq data processing packages in R
+
+The purpose of this step is to 'count' the reads per intron/exon/transcript/gene. 
+
+```
+stringtie -p 2 -G \path\to\genome_annotation.gtf -e -B -o samplename_transcripts.gtf -A samplename_gene_abundances.tsv path/to/input/samplename_sorted.bam
+```
+- `-p 2` number of threads
+- `-G \path\to\genome_annotation.gtf` specifies that a genome assembly file should be used to do the assembly. If no annotation files is given and `-G` is not specified, stringtie will do a 'de novo' assembly, i.e. will assemble transcripts without a reference.
+- `-e` Limits the processing of read alignments to only estimate and output the assembled transcripts matching the reference transcripts given with the -G option. This is recommended by the makers of Stringtie for downstream ballgown/edgeR/DEseq analysis.
+- `B` specifies to create files (i.e. `.ctab` files) needed for ballgown analysis
+- `-o samplename_transcripts.gtf` specifies output `.gtf` file containing info on 
