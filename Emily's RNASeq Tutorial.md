@@ -163,4 +163,7 @@ stringtie -p 2 -G \path\to\genome_annotation.gtf -e -B -o samplename_transcripts
 - `-G \path\to\genome_annotation.gtf` specifies that a genome assembly file should be used to do the assembly. If no annotation files is given and `-G` is not specified, stringtie will do a 'de novo' assembly, i.e. will assemble transcripts without a reference.
 - `-e` Limits the processing of read alignments to only estimate and output the assembled transcripts matching the reference transcripts given with the -G option. This is recommended by the makers of Stringtie for downstream ballgown/edgeR/DEseq analysis.
 - `B` specifies to create files (i.e. `.ctab` files) needed for ballgown analysis
-- `-o samplename_transcripts.gtf` specifies output `.gtf` file containing info on 
+- `-o samplename_transcripts.gtf` specifies output `.gtf` file containing info on transcripts identified in the data, does not contain information on 'count' data i.e. how many reads found per sample
+
+########################
+# R Code Tutorial
