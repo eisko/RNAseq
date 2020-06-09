@@ -170,3 +170,30 @@ path/to/input/samplename_sorted.bam
 
 **************************
 # R Code Tutorial
+
+In R, you will be able to 1) create a results table of differential expression, 2) create a volcano plot, 3) create a PCA plot.
+
+The main packages used to analyze the data include `ballgown` and `edgeR`. Other packages used to analyze RnaSeq data include `DESeq2`, but I have not explored and will not be using the package. Each of these packages use slightly different statistical models and methods to analyze the data, and it may be worth doing some brief reserach to determine which package/analysis method best suits your data.
+
+## Before you start...
+
+Many of these packages (e.g. `ballgown` and `edgeR`) can be installed through [**bioconductor**](https://www.bioconductor.org/). I would suggest *not* installing these packages through conda as this can cause glitches to occur. Instead, download Rstudio to your laptop and use bioconductor (`BiocManager::install("package")`) in the R console to download packages. Using bioconductor rather than the base `install()` function will ensure the packages and all its dependencies are configured corrrectly.
+
+## Step 1: Differential Expression analysis
+### Ballgown
+[**Ballgown Installation**](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) \
+[**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html) <- highly recommend checking this out. Great vignette and info on how to use the package and what else it can do!
+
+Below, you can find the code I used to analyze the data. I have annotated it, but it may need tweaking to fit your data and your analysis.
+
+Load the following packages:
+```r
+library(genefilter)
+library(dplyr)
+library(devtools)
+library(ballgown)
+```
+
+
+
+
