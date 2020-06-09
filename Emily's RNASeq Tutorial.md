@@ -53,8 +53,8 @@ If you would like to do RNASeq analysis on a windows computer, I would suggest i
 ### FastQC
 [**FastQC Documentation**](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
-**Input:** fastq files with sample reads
-**Input:** zip and html files containing quality report information
+**Input:** fastq files with sample reads \
+**Output:** zip and html files containing quality report information
 
 In the terminal, navigate to the folder containing the fastq files you would like to analyze. Run the following command:
 
@@ -66,10 +66,10 @@ These results will inform the trimming you may have to perform to improve the qu
 
 ## Step 2: Trimming
 ### Trimmomatic
-[**Trimmomatic Documentation**](http://www.usadellab.org/cms/?page=trimmomatic)
+[**Trimmomatic Documentation**](http://www.usadellab.org/cms/?page=trimmomatic) \
 [**Trimmomatic Manual**](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf)
 
-**Input:** fastq files
+**Input:** fastq files \
 **Output:** fastq files containing trimmed and filtered reads
 
 There is no set way to trim the reads. Each batch of samples may require different trimmed settings.
@@ -98,7 +98,7 @@ MINLEN:70 \
 ### Hisat2
 [**Hisat2 Documentation**](http://daehwankimlab.github.io/hisat2/)
 
-**Input:** fastq file and an indexed reference genome (`.ht2` files) as input
+**Input:** fastq file and an indexed reference genome (`.ht2` files) as input \
 **Output:** Sam files (be warned, these are VERY large files!) and textfile with summary stats
 
 Before running the command, you must have the correct reference genome downloaded. Hisat2 requires an additional step of indexing the reference genome, thus it takes `.ht2` files as input, *not* raw .fa (i.e. fasta files) as input.
@@ -122,10 +122,10 @@ hisat2 --rna-strandness RF --dta -p 2  -x path/to/reference/GRCm38/genome \
 
 ## Step 4: Sort
 ### Samtools
-[**Samtools Documentation**](http://www.htslib.org/)
+[**Samtools Documentation**](http://www.htslib.org/) \
 [**Samtools Manual**](http://www.htslib.org/doc/samtools.html)
 
-**Input:** sam file as input (be warned, these are VERY large files!)
+**Input:** sam file as input (be warned, these are VERY large files!) \
 **Output:** bam file (a compressed version of the sam file)
 
 The purpose of this step is to compress the Sequence Alignment/Map (SAM) file into a bam (binary version of a sam file) format. Bam files are much smaller and easier for the computer to handle. Each line in the file documents a read alignment to the reference genome. You can learn morea bout sam/bam file format [**here**](https://samtools.github.io/hts-specs/SAMv1.pdf).
@@ -145,10 +145,10 @@ If you would like to visually inspect the `.bam` files using [**IGV**](http://so
 
 ## Step 5: Assembly
 ### Stringtie
-[**Stringtie Documentation**](https://ccb.jhu.edu/software/stringtie/)
+[**Stringtie Documentation**](https://ccb.jhu.edu/software/stringtie/) \
 [**Stringtie Manual**](https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual)
 
-**Input:** bam file and genome annotation file (`.gff` or `.gtf` file will work)
+**Input:** bam file and genome annotation file (`.gff` or `.gtf` file will work) \
 **Output:** several files in a `samplename` folder
 - `sample_transcripts.gtf` contains information on all of the transcripts identified using stringtie
 - `.ctab` files (there should be 5 of them per file). These files are used as input for ballgown
@@ -157,7 +157,10 @@ If you would like to visually inspect the `.bam` files using [**IGV**](http://so
 The purpose of this step is to 'count' the reads per intron/exon/transcript/gene. 
 
 ```
-stringtie -p 2 -G \path\to\genome_annotation.gtf -e -B -o samplename_transcripts.gtf -A samplename_gene_abundances.tsv path/to/input/samplename_sorted.bam
+stringtie -p 2 -G \path\to\genome_annotation.gtf -e -B \
+-o samplename_transcripts.gtf \
+-A samplename_gene_abundances.tsv \
+path/to/input/samplename_sorted.bam
 ```
 - `-p 2` number of threads
 - `-G \path\to\genome_annotation.gtf` specifies that a genome assembly file should be used to do the assembly. If no annotation files is given and `-G` is not specified, stringtie will do a 'de novo' assembly, i.e. will assemble transcripts without a reference.
