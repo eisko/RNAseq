@@ -120,9 +120,10 @@ volcano <- ggplot(res, aes(x = log2fc, y = -log10(pvalue), color=significance)) 
 
 
 # output tiff for volcano
-tiff(filename = paste("pics/volcano_", file, ".tiff"), width = 6, height = 6, units = "in", res = 300)
-volcano
-dev.off()
+# tiff(filename = paste("pics/volcano_", file, ".tiff"), width = 6, height = 6, units = "in", res = 300)
+# volcano
+# dev.off()
+ggsave(paste("pics/volcano_", file, ".tiff"), plot = volcano, width=6, height=6)
 
 # transcript_fpkm = texpr(bg_filt, 'FPKM')
 # transcript_fpkm_log2 = log2(transcript_fpkm+1)
