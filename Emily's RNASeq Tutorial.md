@@ -324,9 +324,9 @@ bg_filt = subset(bg_subset,"rowVars(texpr(bg_subset)) > 1", genomesubset=TRUE)
 
 If you reinspect the ballgown object you will notice many less 0s (i.e. reducing the 'sparseness' of the dataset):
 ```r
-texpr(bg_filt)
+head(texpr(bg_filt))
 ```
-```
+```r
 FPKM.EI_01 FPKM.EI_02 FPKM.EI_03 FPKM.EI_04 FPKM.EI_05 FPKM.EI_06 FPKM.EI_13 FPKM.EI_14 FPKM.EI_15
 46   5.430120   4.722524   1.880314   3.575279   4.019314   7.252697   2.528504   2.482140   3.035233
 47   7.452411   8.411320   5.454850   7.409715   9.295838   5.133492   5.535621   5.947452   6.402004
