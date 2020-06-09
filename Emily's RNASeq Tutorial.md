@@ -156,6 +156,8 @@ If you would like to visually inspect the `.bam` files using [**IGV**](http://so
 
 The purpose of this step is to 'count' the reads per intron/exon/transcript/gene. 
 
+NOTE: I would recommend at this step using a simple `samplename` prefix and numbering sample 01, 02, 03,...,10,11,12... to make subsequent ballgown data analysis  easier.
+
 ```
 stringtie -p 2 -G \path\to\genome_annotation.gtf -e -B \
 -o samplename_transcripts.gtf \
@@ -187,12 +189,96 @@ Many of these packages (e.g. `ballgown` and `edgeR`) can be installed through [*
 Below, you can find the code I used to analyze the data. I have annotated it, but it may need tweaking to fit your data and your analysis.
 
 Load the following packages:
-```R
-library(genefilter)
-library(dplyr)
-library(devtools)
-library(ballgown)
+```r
+library("genefilter")
+library("dplyr")
+library("devtools")
+library("ballgown")
 ```
+
+Use the output files of stringtie to create the ballgown object. The output for stringtie should look something like this:
+```
+experiment_folder/
+    sample01/
+        e2t.ctab
+        e_data.ctab
+        i2t.ctab
+        i_data.ctab
+        t_data.ctab
+    sample02/
+        e2t.ctab
+        e_data.ctab
+        i2t.ctab
+        i_data.ctab
+        t_data.ctab
+    ...
+    sample20/
+        e2t.ctab
+        e_data.ctab
+        i2t.ctab
+        i_data.ctab
+        t_data.ctab
+```
+Where experiment_folder contains a labeled folder for each sample processed, and each sample folder (e.g. `sample01`) contain 5 `.ctab` files. Additional files created by stringtie in these folders (e.g. a `.gtf` or `.tsv` files) will not interfere with the generation of the ballgown object.
+
+If the data is organized in that way, generating the ballgown object becomes simple:
+```r
+bg <- ballgown(dataDir="path/to/experiment_folder", samplePattern='sample', meas='all')
+```
+- `dataDir=` provide a string of the path leading and including the `experiment_folder`
+- `samplePattern=` provide the prefix used for naming samples (e.g. I used `EI_01` to `EI_24`, so I supplied `samplePattern='EI_'`)
+- `meas=` this indicates the expression measure used for creating the ballgown object. Other objects include `'FPKM'`, `'cov'`, and more.
+
+If your samples are not numerically or simply labelled, you can instead create a vector containing the paths to all your samples and use this to generate your ballgown object:
+```r
+sample_list <- c("/path/to/experiment_folder/sample01",
+                 "/path/to/experiment_folder/sample02",
+                 "/path/to/experiment_folder/sample03",
+                 "/path/to/experiment_folder/sample04",
+                 .
+                 .
+                 .
+                 .
+                 )
+bg <- ballgown(samples=sample_list, meas='all')
+```
+
+
+This step will likely take awhile and create a large object. I suggest saving it as a RDS object, so you don't have to repeated build the ballgown object
+```r
+saveRDS("path/to/ballgown/output/bg.rds")
+```
+
+The next step is to import metadata (i.e. 'phenotypic data') and assign it to the ballgown object. This information is generally stored in a `.csv` or a `.tsv` file, which can be created in excel. My metadata file looks something like this:
+```
+sample_id,condition,treatment,sex,group
+EI_01,affected,sham,F,Af_Sham
+EI_02,affected,sham,F,Af_Sham
+EI_03,affected,sham,F,Af_Sham
+EI_04,affected,sham,M,Af_Sham
+EI_05,affected,sham,M,Af_Sham
+EI_06,affected,sham,M,Af_Sham
+EI_07,affected,vancomycin,F,Af_Vanc
+EI_08,affected,vancomycin,F,Af_Vanc
+EI_09,affected,vancomycin,F,Af_Vanc
+EI_10,affected,vancomycin,M,Af_Vanc
+EI_11,affected,vancomycin,M,Af_Vanc
+EI_12,affected,vancomycin,M,Af_Vanc
+EI_13,unaffected,sham,F,Un_Sham
+EI_14,unaffected,sham,F,Un_Sham
+EI_15,unaffected,sham,F,Un_Sham
+EI_16,unaffected,sham,M,Un_Sham
+EI_17,unaffected,sham,M,Un_Sham
+EI_18,unaffected,sham,M,Un_Sham
+EI_19,unaffected,vancomycin,F,Un_Vanc
+EI_20,unaffected,vancomycin,F,Un_Vanc
+EI_21,unaffected,vancomycin,F,Un_Vanc
+EI_22,unaffected,vancomycin,M,Un_Vanc
+EI_23,unaffected,vancomycin,M,Un_Vanc
+EI_24,unaffected,vancomycin,M,Un_Vanc
+```
+
+NOTE: make sure the first column (`sample_id`) *exactly* matches the sample names used to label the folders containing ballgown input data (e.g. `sample01` in the example file structure above).
 
 
 
