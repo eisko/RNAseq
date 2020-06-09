@@ -181,7 +181,7 @@ The main packages used to analyze the data include `ballgown` and `edgeR`. Other
 
 Many of these packages (e.g. `ballgown` and `edgeR`) can be installed through [**bioconductor**](https://www.bioconductor.org/). I would suggest *not* installing these packages through conda as this can cause glitches to occur. Instead, download Rstudio to your laptop and use bioconductor (`BiocManager::install("package")`) in the R console to download packages. Using bioconductor rather than the base `install()` function will ensure the packages and all its dependencies are configured corrrectly.
 
-## Step 1: Differential Expression analysis
+## Part 1: Differential Expression analysis
 ### Ballgown
 [**Ballgown Installation**](https://www.bioconductor.org/packages/release/bioc/html/ballgown.html) \
 [**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html) <- highly recommend checking this out. Great vignette and info on how to use the package and what else it can do! \
