@@ -253,6 +253,22 @@ saveRDS("path/to/ballgown/output/bg.rds")
 Now that the ballgown object is created, we can inspect the data by generating a table of transcript or gene expression values. See the [**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html) for more information and options.\
 - `texpr(bg)` will generate a table where columns are individual samples, rows are transcripts, and each entry is the FPKM observed in each sample for that specified transcript
 - `gexpr(bg)` will generate a similar table but each row is a gene instead of a transcript
+Example:
+```r
+texpr(bg)
+```
+
+```r
+ FPKM.EI_01 FPKM.EI_02    . . . FPKM.EI_10 FPKM.EI_11 FPKM.EI_12 FPKM.EI_13 FPKM.EI_14
+1          0          0   . . .   0.000000          0          0          0   0.000000
+2          0          0   . . .   0.000000          0          0          0   0.000000
+3          0          0   . . .   0.000000          0          0          0   0.018331
+4          0          0   . . .   0.000000          0          0          0   0.000000 
+5          0          0   . . .   0.014456          0          0          0   0.000000
+6          0          0   . . .   0.000000          0          0          0   0.000000
+```
+
+Notice how there are a lot of 0s, this will be addressed in the filtering step below.
 
 
 The next step is to import metadata (i.e. 'phenotypic data') and assign it to the ballgown object. This information is generally stored in a `.csv` or a `.tsv` file, which can be created in excel. My metadata file looks something like this:
@@ -306,6 +322,22 @@ Before completing the statistical analysis, low abundance transcripts must be fi
 bg_filt = subset(bg_subset,"rowVars(texpr(bg_subset)) > 1", genomesubset=TRUE)
 ```
 
+If you reinspect the ballgown object you will notice many less 0s (i.e. reducing the 'sparseness' of the dataset):
+```r
+texpr(bg_filt)
+```
+```
+FPKM.EI_01 FPKM.EI_02 FPKM.EI_03 FPKM.EI_04 FPKM.EI_05 FPKM.EI_06 FPKM.EI_13 FPKM.EI_14 FPKM.EI_15
+46   5.430120   4.722524   1.880314   3.575279   4.019314   7.252697   2.528504   2.482140   3.035233
+47   7.452411   8.411320   5.454850   7.409715   9.295838   5.133492   5.535621   5.947452   6.402004
+48   2.800960   5.133840   1.824513   4.669214   6.825549   6.026739   6.467938   3.099066   5.983899
+52   1.927685   8.972164   3.501288   3.722792   5.407292   0.000000   4.631611   4.008284   6.711938
+55  38.717491  55.873985  26.445629  47.138226  43.783592  56.063797  47.812008  60.119213  56.030407
+63  26.751963  30.930845  53.045113  25.794495  22.391626  24.219151  17.764759  16.974792  19.402292
+```
+
+
+
 Next, we will compare expression data across a variable in the metadata. In my case, I have restricted to the samples to `sham` treatment, and I would like to compare across the `'condition'` (i.e. `affected` vs. `unaffected`). Ballgown uses the normalization and anlysis implemented in the `limma` package. To learn more and find more references on the statistical analysis used in ballgown see the [**Ballgown Paper**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4792117/) or [**Ballgown Vignette**](https://www.bioconductor.org/packages/release/bioc/vignettes/ballgown/inst/doc/ballgown.html). To generate the statistical analysis run:
 ```r
 results_genes = stattest(bg_filt, feature="gene", covariate="condition", getFC=TRUE, meas="FPKM")
@@ -321,5 +353,41 @@ The output of `stattest()` is a table containing the results of the statistical 
 head(results_genes)
 ```
 
+```r
+ feature                 id        fc        pval      qval
+1    gene ENSMUSG00000000001 1.3316766 0.051766131 0.3137894
+2    gene ENSMUSG00000000031 0.3162352 0.343807799 0.6383109
+3    gene ENSMUSG00000000049 0.7694331 0.223577924 0.5329133
+4    gene ENSMUSG00000000056 1.2834758 0.187591088 0.5020498
+5    gene ENSMUSG00000000078 1.5242118 0.404437300 0.6851108
+6    gene ENSMUSG00000000088 0.5033407 0.007286408 0.1807343
 ```
+
+To append gene names to the results table:
+```r
+# Load all attributes including gene name
+bg_filt_table = texpr(bg_filt , 'all')
+
+# Extract only gene name and ensembl ID columns
+bg_filt_gene_names = unique(bg_filt_table[, 9:10])
+
+# add gene names to results table based on matching Ensembl ID
+results_genes = merge(results_genes, bg_filt_gene_names, by.x=c("id"), by.y=c("gene_id"))
+
+head(results_genes)
+```
+
+```r
+                  id feature        fc        pval      qval gene_name
+1 ENSMUSG00000000001    gene 1.3316766 0.051766131 0.3137894     Gnai3
+2 ENSMUSG00000000031    gene 0.3162352 0.343807799 0.6383109       H19
+3 ENSMUSG00000000049    gene 0.7694331 0.223577924 0.5329133      Apoh
+4 ENSMUSG00000000056    gene 1.2834758 0.187591088 0.5020498      Narf
+5 ENSMUSG00000000078    gene 1.5242118 0.404437300 0.6851108      Klf6
+6 ENSMUSG00000000088    gene 0.5033407 0.007286408 0.1807343     Cox5a
+```
+
+Make sure to save the results as a `.csv` or `.tsv` file. This file can be opened and inspected in excel and can be used as supplementary data upon publication.
+```r
+write.table(results_genes, "path/to/output/filename_gene_results.csv", sep=",", quote=FALSE, row.names = FALSE)
 ```
