@@ -16,8 +16,8 @@ library("edgeR")
 library("tidyverse")
 # library("DESeq2")
 library("stringr")
-library("factoextra")
-library("FactoMineR")
+# library("factoextra")
+# library("FactoMineR")
 # library("biomaRt")
 
 # colors
