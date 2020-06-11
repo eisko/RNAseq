@@ -18,7 +18,7 @@ library("tidyverse")
 library("stringr")
 library("factoextra")
 library("FactoMineR")
-library("biomaRt")
+# library("biomaRt")
 
 # colors
 blue <- "#4370C3"
