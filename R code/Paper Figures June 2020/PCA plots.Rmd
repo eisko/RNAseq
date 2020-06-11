@@ -14,7 +14,7 @@ Also used code for plotPCA in DESeq2 package to figure out filtering/norm steps 
 library("ggplot2")
 library("edgeR")
 library("tidyverse")
-library("DESeq2")
+# library("DESeq2")
 library("stringr")
 library("factoextra")
 library("FactoMineR")
