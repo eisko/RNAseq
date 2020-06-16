@@ -141,7 +141,7 @@ samtools sort -@ 2 -o /path/to/output/samplename_sorted.bam /path/to/input/sampl
 
 After creating the `.bam` files, I would recommend deleting (using the unix `rm` function) the `.sam` files as they take up a lot of space and all subsequent steps can be run using the `.bam` files. 
 
-If you would like to visually inspect the `.bam` files using [**IGV**](http://software.broadinstitute.org/software/igv/), you first need to create a bam index using the samtools index function (`samtools samtools index /path/to/samplename_sorted.bam`).
+If you would like to visually inspect the `.bam` files using [**IGV**](http://software.broadinstitute.org/software/igv/), you first need to create a bam index using the samtools index function (`samtools index /path/to/samplename_sorted.bam`).
 
 ## Step 5: Assembly
 ### Stringtie
