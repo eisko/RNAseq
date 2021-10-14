@@ -2,7 +2,7 @@
 Scripts and info for RNAseq pipeline
 
 ## Tutorial
-See [**Emily's RnaSeq Tutorial**](https://github.com/eisko/RNAseq/blob/master/Emily's%20RNASeq%20Tutorial.md) for a tutorial I generated myself. It is not completely exhastive and does not go into depth in explaining what each program does and how. If you would like to know more about what each program does and how, I suggest visiting the software page and looking at the documentation, or looking up the published article associated with each software tool.
+See [**Emily's RnaSeq Tutorial**](https://github.com/eisko/RNAseq/blob/master/Emily's%20RNASeq%20Tutorial.md) for a tutorial I generated myself. It is not completely exhaustive and does not go in depth in explaining what each program does and how. If you would like to know more about what each program does and how, I suggest visiting the software page and looking at the documentation or looking up the published article associated with each software tool.
 
 ## Scripts
 See [**swarm outline**](https://github.com/eisko/RNAseq/blob/master/swarm%20outline) for the pipeline outline and a summary of commands used in swarm scripts on biowulf.
