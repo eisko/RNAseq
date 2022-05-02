@@ -46,6 +46,7 @@ Additional resources for learning RNAseq data analysis and necessary tools:
 * To implement pipeline on local laptop: [**Conda/bioconda essentials**](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 * Cloud computing on biowulf: [**Biowulf Online Class**](https://hpc.nih.gov/training/intro_biowulf/)
 * Interacting with terminal: [**Unix/shell tutorial**](https://www.datacamp.com/courses/introduction-to-shell-for-data-science)
+* Another great teaching resource for learning theory and implementation of RNAseq: [**Harvard Chan Bioinformatics Core Training Program**](https://hbctraining.github.io/main/#introduction-to-next-generation-sequencing-ngs-analysis-series)
 
 Reviews of RNAseq:
 * General overview: [**Wang et al., 2009**](https://www.ncbi.nlm.nih.gov/pubmed/19015660)
