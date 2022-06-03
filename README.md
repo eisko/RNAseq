@@ -37,6 +37,9 @@ See [**swarm_files.py**](https://github.com/eisko/RNAseq/blob/master/swarm_files
 
 ## More Links and Resources
 
+Great overview of bioinformatics basics:
+* [**iab online textbook**](https://readiab.org/introduction.html) is a great interactive, free resources for learning about bioinformatics and how to manipulate sequences in python
+
 Additional resources for learning RNAseq data analysis and necessary tools:
 * [**Powerpoint**](https://github.com/eisko/RNAseq/blob/master/RNAseq%20info.pptx) I prepared for lab meeting. Includes overview and some explanation of pipeline
 * Overview of RNAseq pipeline: [**Pertea et al., 2016**](https://www.nature.com/articles/nprot.2016.095)
